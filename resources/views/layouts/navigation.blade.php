@@ -16,10 +16,10 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 @if (Auth::user()->type === 1 || Auth::user()->type === 2) <!-- Cek jika pengguna adalah admin atau superadmin -->
-                    <x-nav-link style="text-decoration: none;" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link style="text-decoration: none;" :href="route('adminSurveyShow')" :active="request()->routeIs('adminSurveyShow')">
                         {{ __('Master Survey') }}
                     </x-nav-link>
-                    <x-nav-link style="text-decoration: none;" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link style="text-decoration: none;" :href="route('adminPelatihanShow')" :active="request()->routeIs('adminPelatihanShow')">
                         {{ __('Master Pelatihan') }}
                     </x-nav-link>
                     <x-nav-link style="text-decoration: none;" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
