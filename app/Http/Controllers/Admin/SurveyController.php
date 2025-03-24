@@ -17,22 +17,13 @@ class SurveyController extends Controller
 
     public function getData(Request $request)
     {
-        $jenisPertanyaan = $request->input('jenis_pertanyaan');
-        $pertanyaans = Pertanyaan::with('pilihanJawabans')
-            ->when($jenisPertanyaan !== 'all', function ($query) use ($jenisPertanyaan) {
-                $query->where('jenis_pertanyaan', $jenisPertanyaan);
-            })
-            ->get();
+        $pertanyaans = Pertanyaan::with('pilihanJawabans')->get();
 
         // Buat kolom action untuk edit dan hapus
         $actionColumn = function ($pertanyaan) {
             $editLink = route('admin.survey.editData', $pertanyaan->id);
             $deleteLink = route('admin.survey.hapusData', $pertanyaan->id);
-
-            return "
-            <a href='{$editLink}'>Edit</a> |
-            <a href='{$deleteLink}'>Hapus</a>
-        ";
+            return " <a href='{$editLink}'>Edit</a> | <a href='{$deleteLink}'>Hapus</a> ";
         };
 
         // Buat datatable
@@ -47,8 +38,23 @@ class SurveyController extends Controller
 
     public function getDataJawaban(Request $request)
     {
-        // Kode untuk mengambil data jawaban
-        return true;
+        $jawabans = PilihanJawaban::with('pertanyaan')->get(); // Ambil semua pilihan jawaban beserta pertanyaannya
+
+        $data = [];
+        foreach ($jawabans as $jawaban) {
+            $data[] = [
+                'id' => $jawaban->id,
+                'pertanyaan' => $jawaban->pertanyaan->pertanyaan, // Menampilkan pertanyaan yang terkait
+                'jawaban' => $jawaban->pilihan, // Menampilkan pilihan jawaban
+            ];
+        }
+
+        // Buat datatable
+        $datatable = DataTables::of($data)
+            ->addIndexColumn() // Menambahkan kolom nomor urut
+            ->make(true); // Tidak menggunakan rawColumns karena tidak ada HTML
+
+        return $datatable;
     }
 
     public function getDataSurvey(Request $request)
@@ -59,15 +65,33 @@ class SurveyController extends Controller
 
     public function create()
     {
-        return view('admin.survey.create');
+        return view('admin.survey.partials.add');
     }
 
     public function store(Request $request)
     {
-        $pertanyaan = new Pertanyaan();
-        $pertanyaan->pertanyaan = $request->input('pertanyaan');
-        $pertanyaan->save();
-        return redirect()->route('admin.survey.index')->with('success', 'Pertanyaan berhasil ditambahkan!');
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'pertanyaan' => 'required|string|max:255',
+            'jenis_pertanyaan' => 'required|string',
+        ]);
+
+        try {
+            // Create a new Pertanyaan instance and set its properties
+            $pertanyaan = new Pertanyaan();
+            $pertanyaan->pertanyaan = $validatedData['pertanyaan'];
+            $pertanyaan->jenis_pertanyaan = $validatedData['jenis_pertanyaan'];
+
+            // Save the new question to the database
+            $pertanyaan->save();
+
+            // Redirect to the survey index route with a success message
+            return redirect()->back()->with('success', 'Pertanyaan berhasil ditambahkan!');
+            // return redirect()->route('adminSurveyShow')->with('success', 'Pertanyaan berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            // Handle the exception and redirect back with an error message
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
+        }
     }
 
     public function edit($id)

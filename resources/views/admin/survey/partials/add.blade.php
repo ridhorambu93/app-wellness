@@ -1,14 +1,10 @@
-<section>
+<x-app-layout>
+    <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900">
             {{ __('Form Add Survey') }}
         </h2>
     </header>
-
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
-
     {{-- <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
@@ -57,26 +53,9 @@
             @endif
         </div>
     </form> --}}
-
-    <h1>Buat Jawaban</h1>
-
 <form action="{{ route('survey.store') }}" method="post">
-    @csrf
-
     <label for="pertanyaan_id">Pertanyaan:</label>
-    <select id="pertanyaan_id" name="pertanyaan_id">
-        @foreach($pertanyaans as $pertanyaan)
-            <option value="{{ $pertanyaan->id }}">{{ $pertanyaan->pertanyaan }}</option>
-        @endforeach
-    </select>
-
-    <label for="pilihan_jawaban_id">Pilihan Jawaban:</label>
-    <select id="pilihan_jawaban_id" name="pilihan_jawaban_id">
-        @foreach($pilihanJawabans as $pilihanJawaban)
-            <option value="{{ $pilihanJawaban->id }}">{{ $pilihanJawaban->pilihan }}</option>
-        @endforeach
-    </select>
-
     <button type="submit">Simpan</button>
 </form>
 </section>
+</x-app-layout>
