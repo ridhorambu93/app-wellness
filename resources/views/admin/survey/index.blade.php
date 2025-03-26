@@ -25,36 +25,12 @@
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="data-survey-tab" data-bs-toggle="tab"
                                         data-bs-target="#data-survey" type="button" role="tab"
-                                        aria-controls="data-survey" aria-selected="false">Data Survey</button>
+                                        aria-controls="data-survey" aria-selected="false">Master Survey Karyawan/Responden</button>
                                 </li>
                             </ul>
                         </div>
 
                         <div class="card-body">
-                            <!-- Display Flash Messages -->
-                                @if(session('error'))
-                                    <div class="alert alert-danger">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
-
-                                @if(session('success'))
-                                    <div class="alert alert-success">
-                                        {{ session('success') }}
-                                    </div>
-                                @endif
-
-                                <!-- Display Validation Errors -->
-                                @if ($errors->any())
-                                    <div class="alert alert-danger">
-                                        <ul>
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="data-pertanyaan" role="tabpanel"
                                     aria-labelledby="data-pertanyaan-tab">
@@ -75,12 +51,12 @@
                                 {{-- start tab jawaban --}}
                                 <div class="tab-pane fade" id="data-jawaban" role="tabpanel"
                                     aria-labelledby="data-jawaban-tab">
-                                    <table id="table-jawaban" class="table table-striped table-bordered" cellspacing="0"
-                                        width="100%">
-                                        <thead class="bg-danger">
+                                    <table id="table-jawaban" class="table table-striped table-bordered " cellspacing="10" width="100%">
+                                        <thead>
                                             <tr>
                                                 <th>No</th>
                                                 <th>Jawaban</th>
+                                                <th>Nilai Jawaban</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -96,6 +72,7 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Pertanyaan</th>
                                                 <th>Jawaban</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -106,37 +83,80 @@
                             </div>
                         </div>
 
-                        <!-- Modal Add Pertanyaan -->
-                        <div class="modal fade" id="addPertanyaanModal" tabindex="-1" aria-labelledby="addPertanyaanModalLabel" aria-hidden="true" data-bs-backdrop="static">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addPertanyaanModalLabel">Form Pertanyaan</h5>
-                                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Form for adding a new question -->
-                                        <form action="{{ route('survey.store') }}" method="POST">
-                                            @csrf
-                                            <div class="mb-3">
-                                                <label for="pertanyaan" class="form-label">Pertanyaan</label>
-                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="pertanyaan" required></textarea>
-                                            </div>
-                                            <div class="mb-3">
-                                                <select id="jenis-pertanyaan" name="jenis_pertanyaan" class="form-select" required>
-                                                    <option>-- Pilih Jenis Pertanyaan --</option>
-                                                    <option value="pekerjaan">Pekerjaan</option>
-                                                    <option value="lingkungan_kerja">Lingkungan Kerja</option>
-                                                    <option value="kepemimpinan">Kepemimpinan</option>
-                                                    <option value="perusahaan">Perusahaan</option>
-                                                </select>
-                                            </div>
-                                            <button class="btn btn-primary">Submit</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{-- modal --}}
+                        <div class="modal fade" id="addPertanyaanModal" tabindex="-1" aria-labelledby="addPertanyaanModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPertanyaanModalLabel">
+                    @isset($pertanyaan)
+                        Edit Pertanyaan
+                    @else
+                        Tambah Pertanyaan
+                    @endisset
+                </h5>
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Menampilkan Pesan Error atau Sukses -->
+                @if (session('success'))
+                    <script>
+                        Swal.fire({
+                            title: 'Sukses!',
+                            text: '{{ session('success') }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    </script>
+                @elseif (session('error'))
+                    <script>
+                        Swal.fire({
+                            title: 'Terjadi Kesalahan!',
+                            text: '{{ session('error') }}',
+                            icon: 'error',
+                            confirmButtonText: 'Coba Lagi'
+                        });
+                    </script>
+                @endif
+
+                @if ($errors->any())
+                    <script>
+                        Swal.fire({
+                            title: 'Terjadi Kesalahan!',
+                            text: '@foreach ($errors->all() as $error){{ $error }} @endforeach',
+                            icon: 'error',
+                            confirmButtonText: 'Coba Lagi'
+                        });
+                    </script>
+                @endif
+
+                <!-- Form untuk Add dan Edit -->
+                <form action="{{ isset($pertanyaan) ? route('survey.update', $pertanyaan->id) : route('survey.store') }}" method="POST" id="form-pertanyaan">
+                    @csrf
+                    @if(isset($pertanyaan))
+                        @method('PUT') <!-- Menggunakan method PUT untuk update -->
+                    @endif
+                    <div class="mb-3">
+                        <label for="pertanyaan" class="form-label">Pertanyaan</label>
+                        <textarea class="form-control" id="formPertanyaan" rows="3" name="pertanyaan" required>{{ old('pertanyaan', isset($pertanyaan) ? $pertanyaan->pertanyaan : '') }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="jenis-pertanyaan" class="form-label">Jenis Pertanyaan</label>
+                        <select id="jenis-pertanyaan" name="jenis_pertanyaan" class="form-select" required>
+                            <option value="">-- Pilih Jenis Pertanyaan --</option>
+                            <option value="pekerjaan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'pekerjaan' ? 'selected' : '' }}>Pekerjaan</option>
+                            <option value="lingkungan_kerja" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'lingkungan_kerja' ? 'selected' : '' }}>Lingkungan Kerja</option>
+                            <option value="kepemimpinan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'kepemimpinan' ? 'selected' : '' }}>Kepemimpinan</option>
+                            <option value="perusahaan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'perusahaan' ? 'selected' : '' }}>Perusahaan</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">{{ isset($pertanyaan) ? 'Update' : 'Submit' }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
                     </div>
                 </div>
@@ -144,87 +164,183 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+$(document).ready(function() {
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        var table = $('#table-pertanyaan').DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 5,
-            responsive: true,
-            ajax: {
-                 url: '{{ route('admin.survey.getData') }}',
-                data: function (d) {
-                    d.jenis_pertanyaan = $('#jenis-pertanyaan').val();
-                }
+    // Reset form saat halaman dimuat
+    // $('#formPertanyaan').val('');
+    // $('#jenis-pertanyaan').val('');
+
+    // Inisialisasi DataTable untuk pertanyaan
+    const tablePertanyaan = $('#table-pertanyaan').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 5,
+        responsive: true,
+        ajax: {
+            url: '{{ route('admin.survey.getData') }}',
+            data: function (d) {
+                d.jenis_pertanyaan = $('#jenis-pertanyaan').val();
+            }
+        },
+        columns: [
+            {
+                data: 'DT_RowIndex',
+                name: 'DT_RowIndex',
+                orderable: false,
+                searchable: false
             },
-            columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    orderable: false,
-                    searchable: false
+            {
+                data: 'pertanyaan',
+                name: 'pertanyaan'
+            },
+            {
+                data: 'action',
+                name: 'action',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <button class="btn btn-info btn-edit" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#addPertanyaanModal">Edit</button>
+                        <button class="btn btn-danger btn-delete" data-id="${row.id}">Delete</button>
+                    `;
                 },
-                {
-                    data: 'pertanyaan',
-                    name: 'pertanyaan'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
-            ],
-            responsive: true,
-            layout: {
-                topStart: {
-                    pageLength: {
-                        menu: [10, 25, 50, 100]
-                    }
-                },
-                topStart: 'info',
-                topEnd: {
-                    search: {
-                        placeholder: 'Type search here'
-                    }
-                },
-                bottomEnd: {
-                    paging: {
-                        numbers: 3
-                    }
-                }
+            }
+        ],
+    });
+
+    // Form Add
+    $('#pertanyaanForm').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "{{ route('survey.store') }}",
+            data: {
+                pertanyaan: $('#formPertanyaan').val(),
+                jenis_pertanyaan: $('#jenis-pertanyaan').val(),
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                swal("Sukses!", response.success, "success");
+                $('#addPertanyaanModal').modal('hide');
+                $('#formPertanyaan').val(''); // Reset form
+                tablePertanyaan.ajax.reload(); // Reload tabel
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.status === 422 
+                    ? xhr.responseJSON.errors.map(err => err.join(', ')).join('\n')
+                    : 'Terjadi kesalahan: ' + xhr.responseJSON.error;
+
+                swal("Terjadi Kesalahan!", errorMessage, "error");
             }
         });
     });
-</script>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        var table = $('#table-jawaban').DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 5,
-            responsive: true,
-            ajax: {
-                url: '{{ route('admin.survey.getDataJawaban') }}', // Pastikan ini sesuai dengan route yang benar
+    $('.btn-edit').on('click', function() {
+        // Ambil ID pertanyaan yang dikirimkan melalui atribut data-id
+        var id = $(this).data('id');
+        console.log(id)
+        // Kirim request AJAX untuk mengambil data pertanyaan berdasarkan ID
+        $.ajax({
+            url: '/survey/' + id + '/edit', // Pastikan URL ini benar
+            method: 'GET',
+            success: function(response) {
+                // Isi data pada form modal
+                $('#formPertanyaan').val(response.pertanyaan);
+                $('#jenis-pertanyaan').val(response.jenis_pertanyaan);
+                // Ubah form action ke route update
+                $('#form-pertanyaan').attr('action', '/survey/' + id + '/update');
+                // Ubah method form ke PUT
+                $('#form-pertanyaan').append('<input type="hidden" name="_method" value="PUT">');
             },
-            columns: [
-                {
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'pertanyaan', // Kolom untuk pertanyaan
-                    name: 'pertanyaan'
-                },
-                {
-                    data: 'jawaban', // Kolom untuk pilihan jawaban
-                    name: 'jawaban'
-                },
-            ],
-            responsive: true,
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Terjadi Kesalahan',
+                    text: 'Gagal memuat data pertanyaan!',
+                    icon: 'error',
+                    confirmButtonText: 'Tutup'
+                });
+            }
         });
     });
+
+    $(document).on('click', '.btn-edit', function() {
+    var id = $(this).data('id');
+    $.ajax({
+            url: '/survey/' + id + '/edit',
+            method: 'GET',
+            success: function(response) {
+                // Isi data di modal
+                $('#formPertanyaan').val(response.pertanyaan);
+                $('#jenis-pertanyaan').val(response.jenis_pertanyaan);
+                // Ubah action form menjadi update
+                $('#form-pertanyaan').attr('action', '/survey/' + id + '/update');
+                $('#form-pertanyaan').append('<input type="hidden" name="_method" value="PUT">');
+            }
+        });
+    });
+
+    $('#table-pertanyaan').on('click', '.btn-delete', function() {
+    const id = $(this).data('id');
+    Swal.fire({
+        title: "Anda Yakin?",
+        text: "Data ini akan dihapus secara permanen!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+                // Send DELETE request via AJAX
+                $.ajax({
+                    type: 'DELETE',
+                    url: `{{ url('survey/${id}/hapus-pertanyaan') }}`, // Ensure this matches the route in routes/web.php
+                    data: {
+                        _token: '{{ csrf_token() }}' // CSRF token for security
+                    },
+                    success: function(response) {
+                        // On success, show confirmation and reload the table
+                        Swal.fire("Sukses!", response.success, "success");
+                        tablePertanyaan.ajax.reload(); // Reload the data in the table
+                    },
+                    error: function(xhr) {
+                        // On error, show the error message
+                        Swal.fire("Terjadi kesalahan!", xhr.responseJSON.error, "error");
+                    }
+                });
+            } else {
+                // Show cancellation message if the user decides not to delete
+                Swal.fire("Penghapusan dibatalkan!");
+            }
+        });
+    });
+
+    // Inisialisasi DataTable untuk jawaban
+    const tableJawaban = $('#table-jawaban').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 5,
+        responsive: true,
+        ajax: {
+            url: '{{ route('admin.survey.getDataJawaban') }}',
+        },
+        columns: [
+            {
+                data: 'DT_RowIndex',
+                name: 'DT_RowIndex',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'jawaban',
+                name: 'jawaban'
+            },
+                        {
+                data: 'nilai_jawaban',
+                name: 'nilai jawaban'
+            },
+        ],
+    });
+});
 </script>

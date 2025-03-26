@@ -16,14 +16,11 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 @if (Auth::user()->type === 1 || Auth::user()->type === 2) <!-- Cek jika pengguna adalah admin atau superadmin -->
-                    <x-nav-link style="text-decoration: none;" :href="route('adminSurveyShow')" :active="request()->routeIs('adminSurveyShow')">
+                    <x-nav-link style="text-decoration: none;" :href="route('master-survey')" :active="request()->routeIs('master-survey')">
                         {{ __('Master Survey') }}
                     </x-nav-link>
-                    <x-nav-link style="text-decoration: none;" :href="route('adminPelatihanShow')" :active="request()->routeIs('adminPelatihanShow')">
+                    <x-nav-link style="text-decoration: none;" :href="route('master-pelatihan')" :active="request()->routeIs('master-pelatihan')">
                         {{ __('Master Pelatihan') }}
-                    </x-nav-link>
-                    <x-nav-link style="text-decoration: none;" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Master Mood Tracker & Well Being') }}
                     </x-nav-link>
                 @endif
                 </div>
