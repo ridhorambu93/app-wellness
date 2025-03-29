@@ -20,60 +20,65 @@ class PilihanJawabanSeeder extends Seeder
         $pilihanJawabans = [
             [
                 'id_pertanyaan' => $pertanyaanIds[0], // ID pertanyaan pertama
-                'pilihan' => 'Sangat Puas',
-                'nilai' => 5,
+                'id_skala_jawaban' => 1, // ID skala jawaban untuk pertanyaan pertama
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[0],
-                'pilihan' => 'Puas',
-                'nilai' => 4,
+                'id_skala_jawaban' => 2,
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[0],
-                'pilihan' => 'Cukup Puas',
-                'nilai' => 3,
+                'id_skala_jawaban' => 3,
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[0],
-                'pilihan' => 'Tidak Puas',
-                'nilai' => 2,
+                'id_skala_jawaban' => 4,
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[0],
-                'pilihan' => 'Sangat Tidak Puas',
-                'nilai' => 1,
+                'id_skala_jawaban' => 5,
             ],
             // Pilihan untuk pertanyaan kedua
             [
                 'id_pertanyaan' => $pertanyaanIds[1],
-                'pilihan' => 'Sangat Setuju',
-                'nilai' => 5,
+                'id_skala_jawaban' => 6,
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[1],
-                'pilihan' => 'Setuju',
-                'nilai' => 4,
+                'id_skala_jawaban' => 7,
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[1],
-                'pilihan' => 'Tidak Setuju',
-                'nilai' => 2,
+                'id_skala_jawaban' => 8,
+            ],
+            [
+                'id_pertanyaan' => $pertanyaanIds[1],
+                'id_skala_jawaban' => 9,
+            ],
+            [
+                'id_pertanyaan' => $pertanyaanIds[1],
+                'id_skala_jawaban' => 10,
             ],
             // Tambahkan pilihan untuk pertanyaan lainnya sesuai kebutuhan
             [
                 'id_pertanyaan' => $pertanyaanIds[2],
-                'pilihan' => 'Sangat Memuaskan',
-                'nilai' => 5,
+                'id_skala_jawaban' => 11,
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[2],
-                'pilihan' => 'Memuaskan',
-                'nilai' => 4,
+                'id_skala_jawaban' => 12,
             ],
             [
                 'id_pertanyaan' => $pertanyaanIds[2],
-                'pilihan' => 'Cukup Memuaskan',
-                'nilai' => 3,
+                'id_skala_jawaban' => 13,
+            ],
+            [
+                'id_pertanyaan' => $pertanyaanIds[2],
+                'id_skala_jawaban' => 14,
+            ],
+            [
+                'id_pertanyaan' => $pertanyaanIds[2],
+                'id_skala_jawaban' => 15,
             ],
         ];
 

@@ -16,27 +16,27 @@ class SurveyPertanyaanSeeder extends Seeder
         $pertanyaans = [
             [
                 'pertanyaan' => 'Seberapa puas Anda dengan lingkungan kerja di perusahaan?',
-                'jenis_pertanyaan' => 'lingkungan_kerja',
+                'id_kategori_jawaban' => 1, // tambahkan id kategori jawaban
             ],
             [
                 'pertanyaan' => 'Bagaimana Anda menilai kesempatan untuk berkembang dan meningkatkan karir di perusahaan?',
-                'jenis_pertanyaan' => 'kepemimpinan',
+                'id_kategori_jawaban' => 2, // tambahkan id kategori jawaban
             ],
             [
                 'pertanyaan' => 'Seberapa puas Anda dengan kompensasi dan benefit yang diberikan oleh perusahaan?',
-                'jenis_pertanyaan' => 'perusahaan',
+                'id_kategori_jawaban' => 3, // tambahkan id kategori jawaban
             ],
             [
                 'pertanyaan' => 'Seberapa puas Anda dengan komunikasi antara atasan dan bawahan di perusahaan?',
-                'jenis_pertanyaan' => 'lingkungan_kerja',
+                'id_kategori_jawaban' => 1, // tambahkan id kategori jawaban
             ],
             [
                 'pertanyaan' => 'Bagaimana Anda menilai kemampuan perusahaan dalam mengembangkan karyawan?',
-                'jenis_pertanyaan' => 'kepemimpinan',
+                'id_kategori_jawaban' => 2, // tambahkan id kategori jawaban
             ],
             [
                 'pertanyaan' => 'Seberapa puas Anda dengan kebijakan dan prosedur yang berlaku di perusahaan?',
-                'jenis_pertanyaan' => 'perusahaan',
+                'id_kategori_jawaban' => 3, // tambahkan id kategori jawaban
             ],
         ];
 
