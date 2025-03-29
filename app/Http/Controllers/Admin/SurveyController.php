@@ -146,6 +146,7 @@ class SurveyController extends Controller
             ];
         }
 
+
         // Buat datatable
         $datatable = DataTables::of($data)
             ->addIndexColumn()
