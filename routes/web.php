@@ -54,6 +54,7 @@ Route::delete('survey/{id}/hapus-pertanyaan', [SurveyController::class, 'destroy
 
 Route::get('/admin/survey/get-data', [SurveyController::class, 'getData'])->name('admin.survey.getData');
 Route::get('/admin/survey/get-data-jawaban', [SurveyController::class, 'getDataJawaban'])->name('admin.survey.getDataJawaban');
+Route::get('/admin/survey/get-data-survey', [SurveyController::class, 'getDataSurvey'])->name('admin.survey.getDataSurvey');
 
 Route::get('/master-pelatihan', [PelatihanController::class, 'index'])->name('master-pelatihan');
 

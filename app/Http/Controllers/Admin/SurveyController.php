@@ -7,6 +7,7 @@ use App\Models\Pertanyaan;
 use App\Models\PilihanJawaban;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\DB;
 
 class SurveyController extends Controller
 {
@@ -44,7 +45,7 @@ class SurveyController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the incoming data
+        // Validasi
         $validatedData = $request->validate([
             'pertanyaan' => [
                 'required',
@@ -74,18 +75,30 @@ class SurveyController extends Controller
         }
     }
 
-
     public function edit($id)
     {
         $pertanyaan = Pertanyaan::find($id);
-        return view('admin.survey.index', compact('pertanyaan'));
+
+        if (!$pertanyaan) {
+            return response()->json(['error' => 'Pertanyaan tidak ditemukan'], 404);
+        }
+
+        return response()->json($pertanyaan);
     }
 
     public function update(Request $request, $id)
     {
+        // Validasi
         $validatedData = $request->validate([
-            'pertanyaan' => 'required|string|max:255',
+            'pertanyaan' => [
+                'required',
+                'string',
+                'regex:/^[A-Za-z\s.,!?]+$/',
+                'max:255'
+            ],
             'jenis_pertanyaan' => 'required|string',
+        ], [
+            'pertanyaan.regex' => 'Pertanyaan hanya boleh mengandung huruf, spasi, dan tanda baca yang diizinkan (.,!?).',
         ]);
 
         try {
@@ -120,8 +133,6 @@ class SurveyController extends Controller
         return response()->json(['success' => 'Data Pertanyaan berhasil dihapus!']);
     }
 
-
-
     public function getDataJawaban(Request $request)
     {
         $jawabans = PilihanJawaban::all();
@@ -145,7 +156,21 @@ class SurveyController extends Controller
 
     public function getDataSurvey(Request $request)
     {
-        // Kode untuk mengambil data survey
-        return 'tester tester';
+        $data = Pertanyaan::select(
+            'pertanyaan.id', // Include the ID for proper grouping
+            'pertanyaan.pertanyaan',
+            'pertanyaan.jenis_pertanyaan',
+            DB::raw('GROUP_CONCAT(pilihan_jawaban.pilihan SEPARATOR ", ") AS pilihan_jawaban'),
+            DB::raw('GROUP_CONCAT(pilihan_jawaban.nilai SEPARATOR ", ") AS nilai_jawaban')
+        )
+            ->leftJoin('pilihan_jawaban', 'pilihan_jawaban.id_pertanyaan', '=', 'pertanyaan.id')
+            ->whereNotNull('pilihan_jawaban.pilihan') // Ensure only non-null pilihan
+            ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.jenis_pertanyaan')
+            ->orderBy('pertanyaan.pertanyaan')
+            ->get();
+
+        return DataTables::of($data)
+            ->addIndexColumn() // Add index column for DataTables
+            ->make(true); // Return DataTables response
     }
 }
