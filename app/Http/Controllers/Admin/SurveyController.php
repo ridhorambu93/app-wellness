@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pertanyaan;
 use App\Models\PilihanJawaban;
+use App\Models\KategoriJawaban;
+use App\Models\SkalaJawaban;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +15,9 @@ class SurveyController extends Controller
 {
     public function index()
     {
-        return view('admin.survey.index');
+        $kategoriJawaban = KategoriJawaban::all(); // Ambil semua data kategori jawaban
+        $skalaJawaban = SkalaJawaban::all(); // Ambil semua data kategori jawaban
+        return view('admin.survey.index', compact('kategoriJawaban', 'skalaJawaban'));
     }
 
     public function getData(Request $request)
@@ -53,7 +57,6 @@ class SurveyController extends Controller
                 'regex:/^[A-Za-z\s.,!?]+$/',
                 'max:255'
             ],
-            'jenis_pertanyaan' => 'required|string',
         ], [
             'pertanyaan.regex' => 'Pertanyaan hanya boleh mengandung huruf, spasi, dan tanda baca yang diizinkan (.,!?).',
         ]);
@@ -62,7 +65,7 @@ class SurveyController extends Controller
             // Create a new Pertanyaan instance and set its properties
             $pertanyaan = new Pertanyaan();
             $pertanyaan->pertanyaan = $validatedData['pertanyaan'];
-            $pertanyaan->jenis_pertanyaan = $validatedData['jenis_pertanyaan'];
+            // $pertanyaan->jenis_pertanyaan = $validatedData['jenis_pertanyaan'];
 
             // Save the new question to the database
             $pertanyaan->save();
