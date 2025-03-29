@@ -51,10 +51,9 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Jenis Pertanyaan</th>
                                                 <th>Pertanyaan</th>
                                                 <th>Jawaban</th>
-                                                <th>Nilai</th>
+                                                <th>Kategori Jawaban</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -142,7 +141,6 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Jenis Pertanyaan</th>
                                                 <th>List Pertanyaan</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -191,24 +189,10 @@ $(document).ready(function() {
             {
                 data: 'DT_RowIndex',
                 name: 'DT_RowIndex',
+                title: 'No',
                 orderable: false,
                 searchable: false,
                 width: '1%',
-            },
-            {
-                data: 'jenis_pertanyaan',
-                name: 'jenis_pertanyaan',
-                className: 'dt-head-center dt-body-left',
-                width: '10%',
-                    render: function(data, type, row) {
-                        const jenisPertanyaanMap = {
-                            'lingkungan_kerja': 'Lingkungan Kerja',
-                            'pekerjaan': 'Pekerjaan',
-                            'kepemimpinan': 'Kepemimpinan',
-                            'perusahaan': 'Perusahaan',
-                        };
-                        return jenisPertanyaanMap[data];
-                    }
             },
             {
                 data: 'pertanyaan',
@@ -216,14 +200,15 @@ $(document).ready(function() {
                 width: '30%'
             },
             {
-                data: 'pilihan_jawaban',
-                name: 'pilihan_jawaban',
+                data: 'skala_jawaban',
+                name: 'skala_jawaban',
                 width: '20%',
             },
-           {
-                data: 'nilai_jawaban',
-                name: 'nilai_jawaban',
-                width: '10%',
+            {
+                data: 'kategori_jawaban',
+                name: 'kategori_jawaban',
+                className: 'dt-head-center dt-body-left',
+                width: '20%',
             },
             {
                 data: 'action',
@@ -260,20 +245,20 @@ $(document).ready(function() {
                 className: 'dt-head-center dt-body-left',
                 width: '1%',
             },
-            {
-                data: 'jenis_pertanyaan',
-                name: 'jenis_pertanyaan',
-                className: 'dt-head-center dt-body-left text-capitalize',
-                render: function(data, type, row) {
-                    const jenisPertanyaanMap = {
-                        'lingkungan_kerja': 'Lingkungan Kerja',
-                        'pekerjaan': 'Pekerjaan',
-                        'kepemimpinan': 'Kepemimpinan',
-                        'perusahaan': 'Perusahaan',
-                    };
-                    return jenisPertanyaanMap[data];
-                },
-            },
+            // {
+            //     data: 'jenis_pertanyaan',
+            //     name: 'jenis_pertanyaan',
+            //     className: 'dt-head-center dt-body-left text-capitalize',
+            //     render: function(data, type, row) {
+            //         const jenisPertanyaanMap = {
+            //             'lingkungan_kerja': 'Lingkungan Kerja',
+            //             'pekerjaan': 'Pekerjaan',
+            //             'kepemimpinan': 'Kepemimpinan',
+            //             'perusahaan': 'Perusahaan',
+            //         };
+            //         return jenisPertanyaanMap[data];
+            //     },
+            // },
             {
                 data: 'pertanyaan',
                 name: 'pertanyaan',

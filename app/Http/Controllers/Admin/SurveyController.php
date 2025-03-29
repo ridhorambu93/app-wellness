@@ -154,22 +154,42 @@ class SurveyController extends Controller
         return $datatable;
     }
 
+    // public function getDataSurvey(Request $request)
+    // {
+    //     $data = Pertanyaan::select(
+    //         'pertanyaan.id', // Include the ID for proper grouping
+    //         'pertanyaan.pertanyaan',
+    //         'pertanyaan.jenis_pertanyaan',
+    //         DB::raw('GROUP_CONCAT(pilihan_jawaban.pilihan SEPARATOR ", ") AS pilihan_jawaban'),
+    //         DB::raw('GROUP_CONCAT(pilihan_jawaban.nilai SEPARATOR ", ") AS nilai_jawaban')
+    //     )
+    //         ->leftJoin('pilihan_jawaban', 'pilihan_jawaban.id_pertanyaan', '=', 'pertanyaan.id')
+    //         ->whereNotNull('pilihan_jawaban.pilihan') // Ensure only non-null pilihan
+    //         ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.jenis_pertanyaan')
+    //         ->orderBy('pertanyaan.pertanyaan')
+    //         ->get();
+
+    //     return DataTables::of($data)
+    //         ->addIndexColumn() // Add index column for DataTables
+    //         ->make(true); // Return DataTables response
+    // }
+
     public function getDataSurvey(Request $request)
     {
-        $data = Pertanyaan::select(
-            'pertanyaan.id', // Include the ID for proper grouping
-            'pertanyaan.pertanyaan',
-            'pertanyaan.jenis_pertanyaan',
-            DB::raw('GROUP_CONCAT(pilihan_jawaban.pilihan SEPARATOR ", ") AS pilihan_jawaban'),
-            DB::raw('GROUP_CONCAT(pilihan_jawaban.nilai SEPARATOR ", ") AS nilai_jawaban')
+        $pertanyaans = Pertanyaan::select(
+            'pertanyaan.id AS id_pertanyaan',
+            'pertanyaan.pertanyaan AS pertanyaan',
+            DB::raw('GROUP_CONCAT(DISTINCT skala_jawaban.nama_skala) AS skala_jawaban'),
+            'kategori_jawaban.id AS id_kategori_jawaban',
+            'kategori_jawaban.nama_kategori AS kategori_jawaban'
         )
-            ->leftJoin('pilihan_jawaban', 'pilihan_jawaban.id_pertanyaan', '=', 'pertanyaan.id')
-            ->whereNotNull('pilihan_jawaban.pilihan') // Ensure only non-null pilihan
-            ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.jenis_pertanyaan')
-            ->orderBy('pertanyaan.pertanyaan')
+            ->join('pilihan_jawaban', 'pertanyaan.id', '=', 'pilihan_jawaban.id_pertanyaan')
+            ->join('skala_jawaban', 'pilihan_jawaban.id_skala_jawaban', '=', 'skala_jawaban.id')
+            ->join('kategori_jawaban', 'skala_jawaban.id_kategori_jawaban', '=', 'kategori_jawaban.id')
+            ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'kategori_jawaban.id', 'kategori_jawaban.nama_kategori')
             ->get();
 
-        return DataTables::of($data)
+        return DataTables::of($pertanyaans)
             ->addIndexColumn() // Add index column for DataTables
             ->make(true); // Return DataTables response
     }
