@@ -52,8 +52,8 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Pertanyaan</th>
-                                                <th>Jawaban</th>
                                                 <th>Kategori Jawaban</th>
+                                                <th>Jawaban</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -61,7 +61,7 @@
                                     </table>
                                 </div>
 
-                                <div class="modal fade" id="addSurveyModal" tabindex="-1" aria-labelledby="addSurveyModalLabel" data-bs-backdrop="static">
+                                <div class="modal fade" id="addSurveyModal" tabindex="-1" aria-hidden="true" aria-labelledby="addSurveyModalLabel" data-bs-backdrop="static">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -118,14 +118,24 @@
                                                         <textarea class="form-control" id="formPertanyaan" rows="3" name="pertanyaan" required>{{ old('pertanyaan', isset($pertanyaan) ? $pertanyaan->pertanyaan : '') }}</textarea>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label for="jenis-pertanyaan" class="form-label">Jenis Pertanyaan</label>
+                                                        <label for="kategori-jawaban" class="form-label">Kategori</label>
+                                                        <select id="kategoriJawaban" name="id_kategori_jawaban" class="form-select">
+                                                            <option value="">-- Pilih Kategori --</option>
+                                                        @foreach ($kategori_jawaban as $data)
+                                                            <option value="<?= $data->id; ?>"><?= $data->nama_kategori; ?></option>
+                                                        @endforeach
+                                                        </select>
+                                                        {{-- <label for="jenis-pertanyaan" class="form-label">Jenis Pertanyaan</label>
                                                         <select id="jenis-pertanyaan" name="jenis_pertanyaan" class="form-select" required>
                                                             <option value="">-- Pilih Jenis Pertanyaan --</option>
                                                             <option value="pekerjaan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'pekerjaan' ? 'selected' : '' }}>Pekerjaan</option>
                                                             <option value="lingkungan_kerja" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'lingkungan_kerja' ? 'selected' : '' }}>Lingkungan Kerja</option>
                                                             <option value="kepemimpinan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'kepemimpinan' ? 'selected' : '' }}>Kepemimpinan</option>
                                                             <option value="perusahaan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'perusahaan' ? 'selected' : '' }}>Perusahaan</option>
-                                                        </select>
+                                                        </select> --}}
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div id="listJawaban"></div>
                                                     </div>
                                                     <button class="btn btn-primary">{{ isset($pertanyaan) ? 'Update' : 'Submit' }}</button>
                                                 </form>
@@ -176,6 +186,44 @@
 
 <script>
 $(document).ready(function() {
+    $('#kategoriJawaban').on('change', function() {
+        // alert($('#kategoriJawaban').val());
+        if($('#kategoriJawaban').val() == 1) {
+            $('#listJawaban').html(`
+            <div class="form-group">
+                <label for="pilihan_jawaban">Pilihan Jawaban</label>
+                @foreach($data_kepuasan as $skala)
+                  <div>
+                    <input type="checkbox" id="pilihan_jawaban_{{ $skala->id }}" name="pilihan_jawaban[]" value="{{ $skala->id }}">
+                    <label for="pilihan_jawaban_{{ $skala->id }}">{{ $skala->nama_skala }}</label>
+                  </div>
+                @endforeach
+              </div>`)
+        } else if ($('#kategoriJawaban').val() == 2) {
+            $('#listJawaban').html(`
+                <div class="form-group">
+                    <label for="pilihan_jawaban">Pilihan Jawaban</label>
+                    @foreach($data_likert as $skala)
+                    <div>
+                        <input type="checkbox" id="pilihan_jawaban_{{ $skala->id }}" name="pilihan_jawaban[]" value="{{ $skala->id }}">
+                        <label for="pilihan_jawaban_{{ $skala->id }}">{{ $skala->nama_skala }}</label>
+                    </div>
+                    @endforeach
+                </div>`)
+        } else if ($('#kategoriJawaban').val() == 3) {
+            $('#listJawaban').html(`
+                <div class="form-group">
+                    <label for="pilihan_jawaban">Pilihan Jawaban</label>
+                    @foreach($data_tingkat_kepuasan as $skala)
+                    <div>
+                        <input type="checkbox" id="pilihan_jawaban_{{ $skala->id }}" name="pilihan_jawaban[]" value="{{ $skala->id }}">
+                        <label for="pilihan_jawaban_{{ $skala->id }}">{{ $skala->nama_skala }}</label>
+                    </div>
+                    @endforeach
+                </div>`)
+            }
+        })
+
     // table survey
     const tableSurvey = $('#table-survey').DataTable({
         processing: true,
@@ -200,14 +248,14 @@ $(document).ready(function() {
                 width: '30%'
             },
             {
-                data: 'skala_jawaban',
-                name: 'skala_jawaban',
-                width: '20%',
-            },
-            {
                 data: 'kategori_jawaban',
                 name: 'kategori_jawaban',
                 className: 'dt-head-center dt-body-left',
+                width: '20%',
+            },
+            {
+                data: 'skala_jawaban',
+                name: 'skala_jawaban',
                 width: '20%',
             },
             {
