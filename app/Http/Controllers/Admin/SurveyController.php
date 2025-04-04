@@ -16,10 +16,8 @@ class SurveyController extends Controller
     public function index()
     {
         $kategori_jawaban = KategoriJawaban::all();
-        $data_kepuasan = SkalaJawaban::with('kategoriJawaban')->where('id_kategori_jawaban', 1)->get();
-        $data_likert = SkalaJawaban::with('kategoriJawaban')->where('id_kategori_jawaban', 2)->get();
-        $data_tingkat_kepuasan = SkalaJawaban::with('kategoriJawaban')->where('id_kategori_jawaban', 3)->get();
-        return view('admin.survey.index', compact('kategori_jawaban', 'data_kepuasan', 'data_likert', 'data_tingkat_kepuasan'));
+        $skala_jawaban = SkalaJawaban::with('kategoriJawaban')->get()->groupBy('id_kategori_jawaban');
+        return view('admin.survey.index', compact('kategori_jawaban', 'skala_jawaban'));
     }
 
     public function getData(Request $request)

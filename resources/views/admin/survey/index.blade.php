@@ -46,7 +46,11 @@
                                 {{-- tab master survey --}}
                                 <div class="tab-pane fade show active" id="data-survey" role="tabpanel" aria-labelledby="data-survey-tab">
                                     <!-- Add Button -->
-                                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addSurveyModal">Add Data</button>
+                                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addSurveyModal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </button>
                                     <table id="table-survey" class="table table-striped table-bordered" width="100%">
                                         <thead>
                                             <tr>
@@ -108,7 +112,7 @@
                                                 @endif
 
                                                 <!-- Form untuk Add dan Edit -->
-                                                <form action="{{ isset($pertanyaan) ? route('survey.update', $pertanyaan->id) : route('survey.store') }}" method="POST" id="form-pertanyaan">
+                                                {{-- <form action="{{ isset($pertanyaan) ? route('survey.update', $pertanyaan->id) : route('survey.store') }}" method="POST" id="form-pertanyaan">
                                                     @csrf
                                                     @if(isset($pertanyaan))
                                                         @method('PUT') <!-- Menggunakan method PUT untuk update -->
@@ -125,19 +129,46 @@
                                                             <option value="<?= $data->id; ?>"><?= $data->nama_kategori; ?></option>
                                                         @endforeach
                                                         </select>
-                                                        {{-- <label for="jenis-pertanyaan" class="form-label">Jenis Pertanyaan</label>
-                                                        <select id="jenis-pertanyaan" name="jenis_pertanyaan" class="form-select" required>
-                                                            <option value="">-- Pilih Jenis Pertanyaan --</option>
-                                                            <option value="pekerjaan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'pekerjaan' ? 'selected' : '' }}>Pekerjaan</option>
-                                                            <option value="lingkungan_kerja" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'lingkungan_kerja' ? 'selected' : '' }}>Lingkungan Kerja</option>
-                                                            <option value="kepemimpinan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'kepemimpinan' ? 'selected' : '' }}>Kepemimpinan</option>
-                                                            <option value="perusahaan" {{ old('jenis_pertanyaan', isset($pertanyaan) ? $pertanyaan->jenis_pertanyaan : '') == 'perusahaan' ? 'selected' : '' }}>Perusahaan</option>
-                                                        </select> --}}
                                                     </div>
                                                     <div class="mb-3">
                                                         <div id="listJawaban"></div>
                                                     </div>
                                                     <button class="btn btn-primary">{{ isset($pertanyaan) ? 'Update' : 'Submit' }}</button>
+                                                </form> --}}
+                                                <form method="POST" action="{{ route('survey.store') }}">
+                                                    @csrf
+                                                    <div class="form-group">
+                                                        <label for="pertanyaan">Nama Survey</label>
+                                                        <input class="form-control" id="namaSurvey" name="nama_survey" required>{{ old('nama_survey') }}</input>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="pertanyaan">Deskripsi Survey</label>
+                                                        <textarea class="form-control" id="DeskripsiSurvey" name="deskripsi_survey" required>{{ old('deskripsi_survey   ') }}</textarea>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="tanggal_mulai">Tanggal Mulai</label>
+                                                        <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}" required>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="tanggal_berakhir">Tanggal Berakhir</label>
+                                                        <input type="date" class="form-control" id="tanggal_berakhir" name="tanggal_berakhir" value="{{ old('tanggal_berakhir') }}" min="tanggal_mulai" required>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <div class="mb-3">
+                                                        <label for="status" class="form-label">Status</label>
+                                                        <select id="Status" name="status" class="form-select">
+                                                            <option>-- Pilih  Status --</option>
+                                                            <option value="aktif">Aktif</option>
+                                                            <option value="nonaktif">Nonaktif-</option>
+                                                        </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <button type="submit" class="btn btn-primary">Simpan</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -186,43 +217,19 @@
 
 <script>
 $(document).ready(function() {
-    $('#kategoriJawaban').on('change', function() {
-        // alert($('#kategoriJawaban').val());
-        if($('#kategoriJawaban').val() == 1) {
-            $('#listJawaban').html(`
-            <div class="form-group">
-                <label for="pilihan_jawaban">Pilihan Jawaban</label>
-                @foreach($data_kepuasan as $skala)
-                  <div>
-                    <input type="checkbox" id="pilihan_jawaban_{{ $skala->id }}" name="pilihan_jawaban[]" value="{{ $skala->id }}">
-                    <label for="pilihan_jawaban_{{ $skala->id }}">{{ $skala->nama_skala }}</label>
-                  </div>
-                @endforeach
-              </div>`)
-        } else if ($('#kategoriJawaban').val() == 2) {
-            $('#listJawaban').html(`
-                <div class="form-group">
-                    <label for="pilihan_jawaban">Pilihan Jawaban</label>
-                    @foreach($data_likert as $skala)
-                    <div>
-                        <input type="checkbox" id="pilihan_jawaban_{{ $skala->id }}" name="pilihan_jawaban[]" value="{{ $skala->id }}">
-                        <label for="pilihan_jawaban_{{ $skala->id }}">{{ $skala->nama_skala }}</label>
-                    </div>
-                    @endforeach
-                </div>`)
-        } else if ($('#kategoriJawaban').val() == 3) {
-            $('#listJawaban').html(`
-                <div class="form-group">
-                    <label for="pilihan_jawaban">Pilihan Jawaban</label>
-                    @foreach($data_tingkat_kepuasan as $skala)
-                    <div>
-                        <input type="checkbox" id="pilihan_jawaban_{{ $skala->id }}" name="pilihan_jawaban[]" value="{{ $skala->id }}">
-                        <label for="pilihan_jawaban_{{ $skala->id }}">{{ $skala->nama_skala }}</label>
-                    </div>
-                    @endforeach
-                </div>`)
-            }
-        })
+   $('#kategoriJawaban').on('change', function() {
+    const id_kategori_jawaban = $(this).val();
+    const skala_jawaban = @json($skala_jawaban);
+    const selectedSkalaJawaban = skala_jawaban[id_kategori_jawaban];
+    $('#listJawaban').html(`<div class="form-group">
+            <label for="pilihan_jawaban">Pilihan Jawaban</label>
+            ${selectedSkalaJawaban.map(skala => `
+            <div>
+                <input type="checkbox" id="pilihan_jawaban_${skala.id}" name="pilihan_jawaban[]" value="${skala.id}">
+                <label for="pilihan_jawaban_${skala.id}">${skala.nama_skala}</label>
+            </div>`).join('')}
+        </div>`);
+    });
 
     // table survey
     const tableSurvey = $('#table-survey').DataTable({
