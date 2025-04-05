@@ -7,6 +7,7 @@ use App\Models\Pertanyaan;
 use App\Models\PilihanJawaban;
 use App\Models\KategoriJawaban;
 use App\Models\SkalaJawaban;
+use App\Models\Survey;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -41,53 +42,71 @@ class SurveyController extends Controller
         return $datatable;
     }
 
-    public function create()
-    {
-        return view('admin.survey.partials.add');
-    }
-
+    // public function create()
+    // {
+    //     return view('admin.survey.partials.add');
+    // }
 
     public function store(Request $request)
     {
         // Validasi
         $validatedData = $request->validate([
-            'pertanyaan' => [
+            'nama_survey' => [
                 'required',
                 'string',
                 'regex:/^[A-Za-z\s.,!?]+$/',
                 'max:255'
             ],
+            'deskripsi_survey' => [
+                'required',
+                'string',
+                'regex:/^[A-Za-z\s.,!?]+$/'
+            ],
+            'tanggal_mulai' => ['required', 'date'],
+            'tanggal_akhir' => ['required', 'date', 'after:tanggal_mulai']
         ], [
-            'pertanyaan.regex' => 'Pertanyaan hanya boleh mengandung huruf, spasi, dan tanda baca yang diizinkan (.,!?).',
+            'nama_survey.required' => 'Nama survey wajib diisi.',
+            'nama_survey.string' => 'Nama survey harus berupa string.',
+            'nama_survey.regex' => 'Nama survey hanya boleh berisi huruf, spasi, dan simbol .,!?.',
+            'nama_survey.max' => 'Nama survey maksimal 255 karakter.',
+            'deskripsi_survey.required' => 'Deskripsi survey wajib diisi.',
+            'deskripsi_survey.string' => 'Deskripsi survey harus berupa string.',
+            'deskripsi_survey.regex' => 'Deskripsi survey hanya boleh berisi huruf, spasi, dan simbol .,!?.',
+            'tanggal_mulai.required' => 'Tanggal mulai wajib diisi.',
+            'tanggal_mulai.date' => 'Tanggal mulai harus berupa tanggal.',
+            'tanggal_akhir.required' => 'Tanggal akhir wajib diisi.',
+            'tanggal_akhir.date' => 'Tanggal akhir harus berupa tanggal.',
+            'tanggal_akhir.after' => 'Tanggal akhir harus setelah tanggal mulai.'
         ]);
 
         try {
-            // Create a new Pertanyaan instance and set its properties
-            $pertanyaan = new Pertanyaan();
-            $pertanyaan->pertanyaan = $validatedData['pertanyaan'];
-            // $pertanyaan->jenis_pertanyaan = $validatedData['jenis_pertanyaan'];
 
-            // Save the new question to the database
-            $pertanyaan->save();
+            Survey::Create([
+                'nama_survey' => $request->nama_survey,
+                'deskripsi_survey' => $request->deskripsi_survey,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_akhir' => $request->tanggal_akhir,
+                'status_survey' => $request->status
+            ]);
 
-            // Redirect back with a success message (Flash message)
-            return redirect()->back()->with('success', 'Pertanyaan berhasil ditambahkan!');
+            Survey::create($validatedData);
+
+            return redirect()->back()->with('success', 'Data Survey berhasil ditambahkan!');
         } catch (\Exception $e) {
-            // Return an error message if something goes wrong
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
 
-    public function edit($id)
-    {
-        $pertanyaan = Pertanyaan::find($id);
+    // public function edit($id)
+    // {
+    //     $pertanyaan = Pertanyaan::find($id);
 
-        if (!$pertanyaan) {
-            return response()->json(['error' => 'Pertanyaan tidak ditemukan'], 404);
-        }
+    //     if (!$pertanyaan) {
+    //         return response()->json(['error' => 'Pertanyaan tidak ditemukan'], 404);
+    //     }
 
-        return response()->json($pertanyaan);
-    }
+    //     return response()->json($pertanyaan);
+    // }
 
     public function update(Request $request, $id)
     {
