@@ -16,10 +16,10 @@ class JawabanResponden extends Model
         return $this->belongsTo(Pertanyaan::class);
     }
 
-    public function responden(): BelongsTo
-    {
-        return $this->belongsTo(Responden::class);
-    }
+    // public function responden(): BelongsTo
+    // {
+    //     return $this->belongsTo(Responden::class);
+    // }
 
     public function pilihanJawaban(): BelongsTo
     {

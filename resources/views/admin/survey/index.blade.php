@@ -71,9 +71,9 @@
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="addSurveyModalLabel">
                                                     @isset($pertanyaan)
-                                                        Edit Pertanyaan
+                                                        Edit Survey
                                                     @else
-                                                        Tambah Pertanyaan
+                                                        Tambah Survey
                                                     @endisset
                                                 </h5>
                                                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -138,23 +138,27 @@
                                                 <form method="POST" action="{{ route('survey.store') }}">
                                                     @csrf
                                                     <div class="form-group">
-                                                        <label for="pertanyaan">Nama Survey</label>
-                                                        <input class="form-control" id="namaSurvey" name="nama_survey" required>{{ old('nama_survey') }}</input>
+                                                        <label for="pertanyaan">Nama Survey <span class="text-danger">*</span> </label>
+                                                        <input type="text" class="form-control" id="namaSurvey" name="nama_survey" required>
+                                                        {{-- {{ old('nama_survey') }} --}}
+                                                        </input>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="pertanyaan">Deskripsi Survey</label>
-                                                        <textarea class="form-control" id="DeskripsiSurvey" name="deskripsi_survey" required>{{ old('deskripsi_survey   ') }}</textarea>
+                                                        <label for="pertanyaan">Deskripsi Survey <span class="text-danger">*</span></label>
+                                                        <textarea class="form-control" id="deskripsiSurvey" name="deskripsi_survey" required>
+                                                            {{-- {{ old('deskripsi_survey') }} --}}
+                                                        </textarea>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="tanggal_mulai">Tanggal Mulai</label>
-                                                        <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}" required>
+                                                        <label for="tanggal_mulai">Tanggal Mulai <span class="text-danger">*</span></label>
+                                                        <input type="date" class="form-control" id="tanggalMulai" name="tanggal_mulai" /*value="{{ old('tanggal_mulai') }}"*/ required>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="tanggal_berakhir">Tanggal Berakhir</label>
-                                                        <input type="date" class="form-control" id="tanggal_berakhir" name="tanggal_berakhir" value="{{ old('tanggal_berakhir') }}" min="tanggal_mulai" required>
+                                                        <label for="tanggal_berakhir">Tanggal Berakhir <span class="text-danger">*</span></label>
+                                                        <input type="date" class="form-control" id="tanggalAkhir" name="tanggal_akhir" /*value="{{ old('tanggal_akhir') }}"*/ required>
                                                     </div>
 
                                                     <div class="form-group">
@@ -217,6 +221,7 @@
 
 <script>
 $(document).ready(function() {
+    
    $('#kategoriJawaban').on('change', function() {
     const id_kategori_jawaban = $(this).val();
     const skala_jawaban = @json($skala_jawaban);
