@@ -11,10 +11,11 @@ class Survey extends Model
     use HasFactory;
     protected $table = 'surveys';
     protected $fillable = [
-        'pertanyaan',
-        'kategori_jawaban',
+        'nama_survey',
+        'deskripsi_survey',
         'tanggal_mulai',
-        'tanggal_berakhir',
+        'tanggal_akhir',
+        'status_survey'
     ];
 
     public function kategoriJawaban()

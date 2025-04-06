@@ -55,9 +55,11 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Pertanyaan</th>
-                                                <th>Kategori Jawaban</th>
-                                                <th>Jawaban</th>
+                                                <th>Nama Survey</th>
+                                                <th>Deskripsi Survey</th>
+                                                <th>Tanggal Mulai</th>
+                                                <th>Tanggal Berakhir</th>
+                                                <th>Status</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -164,10 +166,10 @@
                                                     <div class="form-group">
                                                         <div class="mb-3">
                                                         <label for="status" class="form-label">Status</label>
-                                                        <select id="Status" name="status" class="form-select">
+                                                        <select id="Status" name="status_survey" class="form-select">
                                                             <option>-- Pilih  Status --</option>
                                                             <option value="aktif">Aktif</option>
-                                                            <option value="nonaktif">Nonaktif-</option>
+                                                            <option value="nonaktif">Nonaktif</option>
                                                         </select>
                                                         </div>
                                                     </div>
@@ -221,7 +223,7 @@
 
 <script>
 $(document).ready(function() {
-    
+
    $('#kategoriJawaban').on('change', function() {
     const id_kategori_jawaban = $(this).val();
     const skala_jawaban = @json($skala_jawaban);
@@ -243,7 +245,11 @@ $(document).ready(function() {
         pageLength: 5,
         responsive: true,
         ajax: {
-            url: '{{ route('admin.survey.getDataSurvey') }}',
+        url: '{{ route('admin.survey.getDataSurvey') }}',
+            error: function(xhr, error, thrown) {
+                // console.log(xhr.responseText);
+                // console.log(tableSurvey.ajax.json());
+            }
         },
         columns: [
             {
@@ -255,20 +261,36 @@ $(document).ready(function() {
                 width: '1%',
             },
             {
-                data: 'pertanyaan',
-                name: 'pertanyaan',
+                data: 'nama_survey',
+                name: 'nama_survey',
                 width: '30%'
             },
             {
-                data: 'kategori_jawaban',
-                name: 'kategori_jawaban',
+                data: 'deskripsi_survey',
+                name: 'deskripsi_survey',
                 className: 'dt-head-center dt-body-left',
                 width: '20%',
             },
             {
-                data: 'skala_jawaban',
-                name: 'skala_jawaban',
-                width: '20%',
+                data: 'tanggal_mulai',
+                name: 'tanggal_mulai',
+                width: '12%',
+            },
+            {
+                data: 'tanggal_akhir',
+                name: 'tanggal_akhir',
+                width: '12%',
+            },
+            {
+                data: 'status_survey',
+                name: 'status_survey',
+                width: '10%',
+                render: function(data, type, row) {
+                var status = {
+                        'aktif': '<span class="badge badge-success">Aktif</span>',
+                        'nonaktif': '<span class="badge badge-danger">Nonaktif</span>'};
+                        return status[data] || data;
+                }
             },
             {
                 data: 'action',
