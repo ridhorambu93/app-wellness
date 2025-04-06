@@ -21,35 +21,34 @@ class SurveyController extends Controller
         return view('admin.survey.index', compact('kategori_jawaban', 'skala_jawaban'));
     }
 
-    public function getData(Request $request)
+    public function getDataSurvey(Request $request)
     {
-        $pertanyaans = Pertanyaan::with('pilihanJawabans')->get();
+        // $pertanyaans = Pertanyaan::select(
+        //     'pertanyaan.id AS id_pertanyaan',
+        //     'pertanyaan.pertanyaan AS pertanyaan',
+        //     DB::raw('GROUP_CONCAT(DISTINCT skala_jawaban.nama_skala) AS skala_jawaban'),
+        //     'kategori_jawaban.id AS id_kategori_jawaban',
+        //     'kategori_jawaban.nama_kategori AS kategori_jawaban'
+        // )
+        //     ->join('pilihan_jawaban', 'pertanyaan.id', '=', 'pilihan_jawaban.id_pertanyaan')
+        //     ->join('skala_jawaban', 'pilihan_jawaban.id_skala_jawaban', '=', 'skala_jawaban.id')
+        //     ->join('kategori_jawaban', 'skala_jawaban.id_kategori_jawaban', '=', 'kategori_jawaban.id')
+        //     ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'kategori_jawaban.id', 'kategori_jawaban.nama_kategori')
+        //     ->get();
 
-        // Buat kolom action untuk edit dan hapus
-        $actionColumn = function ($pertanyaan) {
-            $editLink = route('survey.edit', $pertanyaan->id);
-            $deleteLink = route('survey.hapus-pertanyaan', $pertanyaan->id);
-            return " <a href='{$editLink}'>Edit</a> | <a href='{$deleteLink}'>Hapus</a> ";
-        };
+        // return DataTables::of($pertanyaans)
+        //     ->addIndexColumn() // Add index column for DataTables
+        //     ->make(true); // Return DataTables response
 
-        // Buat datatable
-        $datatable = DataTables::of($pertanyaans)
-            ->addIndexColumn()
-            ->addColumn('action', $actionColumn)
-            ->rawColumns(['action'])
-            ->make(true);
-
-        return $datatable;
+        $surveys = Survey::select('id', 'nama_survey', 'deskripsi_survey', 'tanggal_mulai', 'tanggal_akhir', 'status_survey')->get();
+        return DataTables::of($surveys)
+            ->addIndexColumn() // Add index column for DataTables
+            ->make(true); // Return DataTables response
     }
-
-    // public function create()
-    // {
-    //     return view('admin.survey.partials.add');
-    // }
 
     public function store(Request $request)
     {
-        // Validasi
+        // Cudstom Validasi
         $validatedData = $request->validate([
             'nama_survey' => [
                 'required',
@@ -79,34 +78,14 @@ class SurveyController extends Controller
             'tanggal_akhir.after' => 'Tanggal akhir harus setelah tanggal mulai.'
         ]);
 
+        $validatedData['status_survey'] = strtolower(trim($request->status_survey)) === 'nonaktif' ? 'nonaktif' : 'aktif';
         try {
-
-            Survey::Create([
-                'nama_survey' => $request->nama_survey,
-                'deskripsi_survey' => $request->deskripsi_survey,
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_akhir' => $request->tanggal_akhir,
-                'status_survey' => $request->status
-            ]);
-
             Survey::create($validatedData);
-
             return redirect()->back()->with('success', 'Data Survey berhasil ditambahkan!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
-
-    // public function edit($id)
-    // {
-    //     $pertanyaan = Pertanyaan::find($id);
-
-    //     if (!$pertanyaan) {
-    //         return response()->json(['error' => 'Pertanyaan tidak ditemukan'], 404);
-    //     }
-
-    //     return response()->json($pertanyaan);
-    // }
 
     public function update(Request $request, $id)
     {
@@ -155,6 +134,27 @@ class SurveyController extends Controller
         return response()->json(['success' => 'Data Pertanyaan berhasil dihapus!']);
     }
 
+    public function getData(Request $request)
+    {
+        $pertanyaans = Pertanyaan::with('pilihanJawabans')->get();
+
+        // Buat kolom action untuk edit dan hapus
+        $actionColumn = function ($pertanyaan) {
+            $editLink = route('survey.edit', $pertanyaan->id);
+            $deleteLink = route('survey.hapus-pertanyaan', $pertanyaan->id);
+            return " <a href='{$editLink}'>Edit</a> | <a href='{$deleteLink}'>Hapus</a> ";
+        };
+
+        // Buat datatable
+        $datatable = DataTables::of($pertanyaans)
+            ->addIndexColumn()
+            ->addColumn('action', $actionColumn)
+            ->rawColumns(['action'])
+            ->make(true);
+
+        return $datatable;
+    }
+
     public function getDataJawaban(Request $request)
     {
         $jawabans = PilihanJawaban::all();
@@ -167,53 +167,11 @@ class SurveyController extends Controller
                 'nilai_jawaban' => $jawaban->nilai,
             ];
         }
-
-
         // Buat datatable
         $datatable = DataTables::of($data)
             ->addIndexColumn()
             ->make(true);
 
         return $datatable;
-    }
-
-    // public function getDataSurvey(Request $request)
-    // {
-    //     $data = Pertanyaan::select(
-    //         'pertanyaan.id', // Include the ID for proper grouping
-    //         'pertanyaan.pertanyaan',
-    //         'pertanyaan.jenis_pertanyaan',
-    //         DB::raw('GROUP_CONCAT(pilihan_jawaban.pilihan SEPARATOR ", ") AS pilihan_jawaban'),
-    //         DB::raw('GROUP_CONCAT(pilihan_jawaban.nilai SEPARATOR ", ") AS nilai_jawaban')
-    //     )
-    //         ->leftJoin('pilihan_jawaban', 'pilihan_jawaban.id_pertanyaan', '=', 'pertanyaan.id')
-    //         ->whereNotNull('pilihan_jawaban.pilihan') // Ensure only non-null pilihan
-    //         ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.jenis_pertanyaan')
-    //         ->orderBy('pertanyaan.pertanyaan')
-    //         ->get();
-
-    //     return DataTables::of($data)
-    //         ->addIndexColumn() // Add index column for DataTables
-    //         ->make(true); // Return DataTables response
-    // }
-
-    public function getDataSurvey(Request $request)
-    {
-        $pertanyaans = Pertanyaan::select(
-            'pertanyaan.id AS id_pertanyaan',
-            'pertanyaan.pertanyaan AS pertanyaan',
-            DB::raw('GROUP_CONCAT(DISTINCT skala_jawaban.nama_skala) AS skala_jawaban'),
-            'kategori_jawaban.id AS id_kategori_jawaban',
-            'kategori_jawaban.nama_kategori AS kategori_jawaban'
-        )
-            ->join('pilihan_jawaban', 'pertanyaan.id', '=', 'pilihan_jawaban.id_pertanyaan')
-            ->join('skala_jawaban', 'pilihan_jawaban.id_skala_jawaban', '=', 'skala_jawaban.id')
-            ->join('kategori_jawaban', 'skala_jawaban.id_kategori_jawaban', '=', 'kategori_jawaban.id')
-            ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'kategori_jawaban.id', 'kategori_jawaban.nama_kategori')
-            ->get();
-
-        return DataTables::of($pertanyaans)
-            ->addIndexColumn() // Add index column for DataTables
-            ->make(true); // Return DataTables response
     }
 }
