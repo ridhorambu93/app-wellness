@@ -12,9 +12,26 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link style="text-decoration: none;" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{-- <x-nav-link style="text-decoration: none;" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
-                    </x-nav-link>
+                    </x-nav-link> --}}
+
+            @php
+                $user = Auth::user();
+            @endphp
+                <x-nav-link 
+                    style="text-decoration: none;" 
+                    :href="route(
+                        $user->type === 2 ? 'superAdminDashboardShow' : 
+                        ($user->type === 1 ? 'adminDashboardShow' : 'dashboard')
+                    )" 
+                    :active="request()->routeIs(
+                        $user->type === 2 ? 'superAdminDashboardShow' : 
+                        ($user->type === 1 ? 'adminDashboardShow' : 'dashboard')
+                    )">
+                    {{ __('Dashboard') }}
+                </x-nav-link>
+
                 @if (Auth::user()->type === 1 || Auth::user()->type === 2) <!-- Cek jika pengguna adalah admin atau superadmin -->
                     <x-nav-link style="text-decoration: none;" :href="route('master-survey')" :active="request()->routeIs('master-survey')">
                         {{ __('Master Survey') }}
@@ -27,7 +44,7 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            {{-- <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -56,7 +73,41 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
-            </div>
+            </div> --}}
+            
+            <div x-data="{ open: false }" class="relative sm:flex sm:items-center sm:ms-6">
+    <!-- Trigger Button -->
+    <button @click="open = !open"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <div>{{ Auth::user()->name }}</div>
+        <svg class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0L5.293 8.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div x-show="open" 
+     @click.away="open = false" 
+     x-transition:enter="transition transform ease-out duration-300" 
+     x-transition:enter-start="scale-95 opacity-0" 
+     x-transition:enter-end="scale-100 opacity-100" 
+     x-transition:leave="transition transform ease-in duration-200" 
+     x-transition:leave-start="scale-100 opacity-100" 
+     x-transition:leave-end="scale-95 opacity-0"
+     class="absolute z-50 mt-2 right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        
+        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md focus:bg-gray-200">Profile</a>
+        
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-md focus:bg-gray-200">
+                Log Out
+            </button>
+        </form>
+    </div>
+</div>
+
+
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
