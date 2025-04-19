@@ -38,12 +38,15 @@ require __DIR__ . '/auth.php';
 
 /**General user routes **/
 Route::middleware(['auth', 'verified'])->get('/dashboard', [DashboardController::class, 'generalUserDashboard'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->get('/menu-survey', [SurveyController::class, 'generalUserSurvey'])->name('menu-survey');
+Route::middleware(['auth', 'verified'])->get('/act-survey', [SurveyController::class, 'generalSurveyFill'])->name('act-survey');
 
 /**Admin routes **/
 Route::middleware('adminAuth')->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('adminDashboardShow');
 });
-Route::get('survey/{id}', [SurveyController::class, 'show'])->name('survey.show');
+
+// Route::get('survey/{id}', [SurveyController::class, 'show'])->name('survey.show');
 Route::get('master-survey', [SurveyController::class, 'index'])->name('master-survey');
 Route::get('/survey/create', [SurveyController::class, 'create'])->name('survey.create');
 Route::post('/survey/store', [SurveyController::class, 'store'])->name('survey.store');
