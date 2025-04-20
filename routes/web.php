@@ -39,7 +39,7 @@ require __DIR__ . '/auth.php';
 /**General user routes **/
 Route::middleware(['auth', 'verified'])->get('/dashboard', [DashboardController::class, 'generalUserDashboard'])->name('dashboard');
 Route::middleware(['auth', 'verified'])->get('/menu-survey', [SurveyController::class, 'generalUserSurvey'])->name('menu-survey');
-Route::middleware(['auth', 'verified'])->get('/act-survey', [SurveyController::class, 'generalSurveyFill'])->name('act-survey');
+Route::middleware(['auth', 'verified'])->get('/isi-survey/{id}', [SurveyController::class, 'generalSurveyFill'])->name('survey.fill');
 
 /**Admin routes **/
 Route::middleware('adminAuth')->prefix('admin')->group(function () {
