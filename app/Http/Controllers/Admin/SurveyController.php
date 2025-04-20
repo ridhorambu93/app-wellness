@@ -175,13 +175,13 @@ class SurveyController extends Controller
         return $datatable;
     }
 
-    public function generalUserSurvey(Request $request) {
-         $surveys = Survey::where('status_survey', 'aktif')->get();
-         return view('general.survey.index', compact('surveys'));
+    public function generalUserSurvey() {
+        $surveys = Survey::get();
+        return view('general.survey.index', compact('surveys'));
     }
 
-    public function generalSurveyFill(Request $request) {
-         $surveys = Survey::where('status_survey', 'aktif')->get();
-         return view('general.survey.index', compact('surveys'));
+    public function generalSurveyFill($id) {
+        $surveys = Survey::find($id);
+        return view('general.survey.index', compact('surveys'));
     }
 }
