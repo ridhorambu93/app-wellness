@@ -175,13 +175,25 @@ class SurveyController extends Controller
         return $datatable;
     }
 
-    public function generalUserSurvey() {
+    public function generalUserSurvey()
+    {
         $surveys = Survey::get();
         return view('general.survey.index', compact('surveys'));
     }
 
-    public function generalSurveyFill($id) {
+    public function generalSurveyFill($id)
+    {
         $surveys = Survey::find($id);
-        return view('general.survey.general-fill', compact('surveys'));
+        $pertanyaans = Pertanyaan::with('skalaJawaban')->get();
+
+        foreach ($pertanyaans as $data_pertanyaan) {
+            echo $data_pertanyaan->isi_pertanyaan;
+
+            foreach ($data_pertanyaan->skalaJawaban as $jawaban) {
+                echo $jawaban->opsi_jawaban;
+            }
+        }
+
+        return view('general.survey.general-fill', compact('surveys', 'pertanyaans'));
     }
 }

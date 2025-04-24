@@ -18,6 +18,11 @@ class Pertanyaan extends Model
         return $this->hasMany(PilihanJawaban::class, 'id_pertanyaan');
     }
 
+    public function skalaJawaban()
+    {
+        return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
+    }
+
     public function jawabanRespondens(): HasMany
     {
         return $this->hasMany(JawabanResponden::class);
