@@ -7,9 +7,14 @@
                 <span class="text-sm font-weight-bold text-yellow-700">Back To Survey List</span>
             </a>
     </x-slot>
-    <div class="card p-3">
-        <div class="card-body">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum incidunt eum modi vitae totam repudiandae labore maiores, esse temporibus repellat. Sapiente nesciunt magnam dolorem deserunt.
+    @foreach($pertanyaans as $index => $p)
+        <div class="card-body bg-warning p-2 m-2">
+            <h4 class="font-weight-bold p-1 mb-2">{{ $index + 1 }}. {{ $p->pertanyaan }}</h4> <hr>
+            <ul>
+                @foreach($p->skalaJawaban as $jawaban)
+                    <li class="font-weight-bold ml-3 p-1">{{ $jawaban->nama_skala }}</li>
+                @endforeach
+            </ul>
         </div>
-    </div>
+    @endforeach
 </x-app-layout>
