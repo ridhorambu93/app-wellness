@@ -182,6 +182,6 @@ class SurveyController extends Controller
 
     public function generalSurveyFill($id) {
         $surveys = Survey::find($id);
-        return view('general.survey.index', compact('surveys'));
+        return view('general.survey.general-fill', compact('surveys'));
     }
 }
