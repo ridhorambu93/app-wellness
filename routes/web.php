@@ -40,6 +40,7 @@ require __DIR__ . '/auth.php';
 Route::middleware(['auth', 'verified'])->get('/dashboard', [DashboardController::class, 'generalUserDashboard'])->name('dashboard');
 Route::middleware(['auth', 'verified'])->get('/menu-survey', [SurveyController::class, 'generalUserSurvey'])->name('menu-survey');
 Route::middleware(['auth', 'verified'])->get('/fill-survey/{id}', [SurveyController::class, 'generalSurveyFill'])->name('survey.fill');
+Route::middleware(['auth', 'verified'])->post('/submit-survey', [SurveyController::class, 'submitSurvey'])->name('submit-survey');
 
 /**Admin routes **/
 Route::middleware('adminAuth')->prefix('admin')->group(function () {
