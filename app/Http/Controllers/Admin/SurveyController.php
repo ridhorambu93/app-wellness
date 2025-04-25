@@ -185,7 +185,6 @@ class SurveyController extends Controller
     {
         $surveys = Survey::find($id);
         $pertanyaans = Pertanyaan::with('skalaJawaban')->get();
-
         foreach ($pertanyaans as $data_pertanyaan) {
             echo $data_pertanyaan->isi_pertanyaan;
 
@@ -195,5 +194,11 @@ class SurveyController extends Controller
         }
 
         return view('general.survey.general-fill', compact('surveys', 'pertanyaans'));
+    }
+
+    public function submitSurvey(Request $request)
+    {
+        $answers = $request->all();
+        return response()->json(['message' => 'Data berhasil diterima!', 'data' => $answers]);
     }
 }
