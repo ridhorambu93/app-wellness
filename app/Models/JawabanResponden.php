@@ -9,20 +9,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class JawabanResponden extends Model
 {
     use HasFactory;
+
     protected $fillable = ['pertanyaan_id', 'responden_id', 'pilihan_jawaban_id'];
 
+    // Relasi dengan model Pertanyaan
     public function pertanyaan(): BelongsTo
     {
-        return $this->belongsTo(Pertanyaan::class);
+        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
-    // public function responden(): BelongsTo
-    // {
-    //     return $this->belongsTo(Responden::class);
-    // }
-
-    public function pilihanJawaban(): BelongsTo
+    public function responden(): BelongsTo
     {
-        return $this->belongsTo(PilihanJawaban::class);
+        return $this->belongsTo(User::class, 'responden_id');
     }
+
+    // public function pilihanJawaban(): BelongsTo
+    // {
+    //     return $this->belongsTo(PilihanJawaban::class, 'pilihan_jawaban_id');
+    // }
 }
