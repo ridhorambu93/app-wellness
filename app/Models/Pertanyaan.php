@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pertanyaan extends Model
@@ -12,19 +13,23 @@ class Pertanyaan extends Model
     protected $table = 'pertanyaan';
     protected $fillable = ['pertanyaan'];
 
-    public function pilihanJawabans(): HasMany
+    public function survey(): BelongsTo
     {
-        // return $this->hasMany(PilihanJawaban::class);
-        return $this->hasMany(PilihanJawaban::class, 'id_pertanyaan');
+        return $this->belongsTo(Survey::class);
     }
 
-    public function skalaJawaban()
+    public function jawaban(): HasMany
     {
-        return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
+        return $this->hasMany(JawabanResponden::class, 'pertanyaan_id');
     }
 
-    public function jawabanRespondens(): HasMany
-    {
-        return $this->hasMany(JawabanResponden::class);
-    }
+    // public function pilihanJawabans(): HasMany
+    // {
+    //     return $this->hasMany(PilihanJawaban::class, 'id_pertanyaan');
+    // }
+
+    // public function skalaJawaban()
+    // {
+    //     return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
+    // }
 }
