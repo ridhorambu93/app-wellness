@@ -11,7 +11,7 @@ class JawabanResponden extends Model
     use HasFactory;
 
     protected $fillable = ['pertanyaan_id', 'responden_id', 'pilihan_jawaban_id'];
-
+    protected $table = 'jawaban_responden';
     // Relasi dengan model Pertanyaan
     public function pertanyaan(): BelongsTo
     {

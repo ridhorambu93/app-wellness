@@ -8,6 +8,7 @@ use App\Models\PilihanJawaban;
 use App\Models\KategoriJawaban;
 use App\Models\SkalaJawaban;
 use App\Models\Survey;
+use App\Models\JawabanResponden;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -198,7 +199,33 @@ class SurveyController extends Controller
 
     public function submitSurvey(Request $request)
     {
-        $answers = $request->all();
-        return response()->json(['message' => 'Data berhasil diterima!', 'data' => $answers]);
+        // Validasi input
+        $request->validate([
+            'id_responden' => 'required|exists:users,id', // Pastikan id_responden ada di tabel users
+            'id_pertanyaan' => 'required|array',
+            'jawaban' => 'required|array',
+            'jawaban.*' => 'string', // Atau sesuai tipe data jawaban yang diharapkan
+        ]);
+
+        // Ambil data dari request
+        $id_responden = $request->input('id_responden');
+        $id_pertanyaans = $request->input('id_pertanyaan');
+        $jawabans = $request->input('jawaban');
+
+        // Memastikan jumlah pertanyaan dan jawaban cocok
+        if (count($id_pertanyaans) !== count($jawabans)) {
+            return response()->json(['message' => 'Jumlah pertanyaan dan jawaban tidak cocok.'], 400);
+        }
+
+        // Simpan setiap jawaban ke dalam database
+        foreach ($id_pertanyaans as $index => $id_pertanyaan) {
+            JawabanResponden::create([
+                'id_user' => $id_responden, // Gunakan id_responden sebagai id_user
+                'id_pertanyaan' => $id_pertanyaan,
+                'jawaban' => $jawabans[$index],
+            ]);
+        }
+
+        return response()->json(['message' => 'Data berhasil diterima!'], 201);
     }
 }

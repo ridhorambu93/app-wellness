@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Pertanyaan;
 
@@ -16,27 +15,32 @@ class SurveyPertanyaanSeeder extends Seeder
         $pertanyaans = [
             [
                 'pertanyaan' => 'Seberapa puas Anda dengan lingkungan kerja di perusahaan?',
-                'id_kategori_jawaban' => 1, // tambahkan id kategori jawaban
+                'survey_id' => 3, // Ganti dengan ID survey yang sesuai
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 1
             ],
             [
-                'pertanyaan' => 'Bagaimana Anda menilai kesempatan untuk berkembang dan meningkatkan karir di perusahaan?',
-                'id_kategori_jawaban' => 2, // tambahkan id kategori jawaban
+                'pertanyaan' => 'Seberapa sering Anda merasa nyaman berkomunikasi dengan rekan kerja?',
+                'survey_id' => 3,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 1
             ],
             [
-                'pertanyaan' => 'Seberapa puas Anda dengan kompensasi dan benefit yang diberikan oleh perusahaan?',
-                'id_kategori_jawaban' => 3, // tambahkan id kategori jawaban
+                'pertanyaan' => 'Bagaimana Anda menilai fasilitas yang tersedia di lingkungan kerja?',
+                'survey_id' => 3,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 1
             ],
             [
-                'pertanyaan' => 'Seberapa puas Anda dengan komunikasi antara atasan dan bawahan di perusahaan?',
-                'id_kategori_jawaban' => 1, // tambahkan id kategori jawaban
+                'pertanyaan' => 'Seberapa baik dukungan yang Anda terima dari manajemen?',
+                'survey_id' => 3,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 1
             ],
             [
-                'pertanyaan' => 'Bagaimana Anda menilai kemampuan perusahaan dalam mengembangkan karyawan?',
-                'id_kategori_jawaban' => 2, // tambahkan id kategori jawaban
-            ],
-            [
-                'pertanyaan' => 'Seberapa puas Anda dengan kebijakan dan prosedur yang berlaku di perusahaan?',
-                'id_kategori_jawaban' => 3, // tambahkan id kategori jawaban
+                'pertanyaan' => 'Apa yang menurut Anda perlu diperbaiki dalam lingkungan kerja?',
+                'survey_id' => 3,
+                'type' => 'essai', // Pertanyaan essai
             ],
         ];
 

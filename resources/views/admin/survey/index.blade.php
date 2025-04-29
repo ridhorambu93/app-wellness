@@ -189,6 +189,7 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>List Pertanyaan</th>
+                                                <th>Type Pertanyaan</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -352,6 +353,11 @@ $(document).ready(function() {
             {
                 data: 'pertanyaan',
                 name: 'pertanyaan',
+                className: 'dt-head-center dt-body-left',
+            },
+            {
+                data: 'type',
+                name: 'type',
                 className: 'dt-head-center dt-body-left',
             },
             {
