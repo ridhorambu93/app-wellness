@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pertanyaan', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('survey_id')->constrained()->onDelete('cascade');
-            $table->text('pertanyaan');
-            $table->enum('type', ['pilihan ganda', 'essai']);
+        Schema::table('pertanyaan', function (Blueprint $table) {
+            $table->unsignedBigInteger('id_kategori_jawaban')->nullable()->after('type');
+            // Jika tabel kategori_jawaban sudah ada, Anda bisa menambahkan foreign key
             $table->foreign('id_kategori_jawaban')->references('id')->on('kategori_jawaban')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

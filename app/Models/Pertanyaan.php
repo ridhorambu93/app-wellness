@@ -11,7 +11,7 @@ class Pertanyaan extends Model
 {
     use HasFactory;
     protected $table = 'pertanyaan';
-    protected $fillable = ['pertanyaan'];
+    protected $fillable = ['pertanyaan', 'survey_id', 'type'];
 
     public function survey(): BelongsTo
     {
@@ -23,13 +23,13 @@ class Pertanyaan extends Model
         return $this->hasMany(JawabanResponden::class, 'pertanyaan_id');
     }
 
-    // public function pilihanJawabans(): HasMany
-    // {
-    //     return $this->hasMany(PilihanJawaban::class, 'id_pertanyaan');
-    // }
+    public function pilihanJawabans(): HasMany
+    {
+        return $this->hasMany(PilihanJawaban::class, 'id_pertanyaan');
+    }
 
-    // public function skalaJawaban()
-    // {
-    //     return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
-    // }
+    public function skalaJawaban()
+    {
+        return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
+    }
 }

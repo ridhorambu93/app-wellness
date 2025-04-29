@@ -37,21 +37,29 @@
     </div>
 
     <form id="surveyForm">
-        @foreach($pertanyaans as $index => $p)
-            <div class="card-body bg-white dark:bg-gray-900 rounded-md p-2 m-3">
-                <h4 class="font-weight-bold p-1 mb-2">{{ $index + 1 }}. {{ $p->pertanyaan }}</h4>
-                <hr>
-                <ul>
-                    @foreach($p->skalaJawaban as $jawaban)
-                        <li class="font-weight-bold ml-3 p-1">
-                            <input type="radio" name="question_{{ $index }}" id="jawaban_{{ $index }}_{{ $loop->index }}" value="{{ $jawaban->nilai }}" required>
-                            <label for="jawaban_{{ $index }}_{{ $loop->index }}">{{ $jawaban->nama_skala }}</label>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-        @endforeach
-        <button type="submit" class="m-3 p-3 mb-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Selanjutnya</button>
+      @foreach($pertanyaans as $index => $p)
+    <div class="card-body bg-white dark:bg-gray-900 rounded-md p-2 m-3">
+        <h4 class="font-weight-bold p-1 mb-2">{{ $index + 1 }}. {{ $p->pertanyaan }}</h4>
+        <hr>
+        <ul>
+            <input type="hidden" name="id_responden" value="{{ auth()->user()->id }}">
+            <input type="hidden" name="id_pertanyaan[]" value="{{ $p->id }}"> <!-- Input tersembunyi untuk id_pertanyaan -->
+            @if($p->type === 'essai')
+                <li class="font-weight-bold ml-3 p-1">
+                    <textarea name="jawaban[]" class="form-control" id="jawaban_{{ $index }}" rows="10" placeholder="Jelaskan jawaban Anda" required></textarea>
+                </li>
+            @else
+                @foreach($p->skalaJawaban as $jawaban)
+                    <li class="font-weight-bold ml-3 p-1">
+                        <input type="radio" name="jawaban[{{ $index }}]" id="jawaban_{{ $index }}_{{ $loop->index }}" value="{{ $jawaban->nilai }}" required>
+                        <label for="jawaban_{{ $index }}_{{ $loop->index }}">{{ $jawaban->nama_skala }}</label>
+                    </li>
+                @endforeach
+            @endif
+        </ul>
+    </div>
+@endforeach
+        <button type="submit" class="m-3 p-3 mb-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Submit</button>
     </form>
 </x-app-layout>
 
