@@ -9,9 +9,12 @@ use App\Models\KategoriJawaban;
 use App\Models\SkalaJawaban;
 use App\Models\Survey;
 use App\Models\JawabanResponden;
+use App\Models\Responden;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class SurveyController extends Controller
 {
@@ -197,35 +200,75 @@ class SurveyController extends Controller
         return view('general.survey.general-fill', compact('surveys', 'pertanyaans'));
     }
 
+    // public function submitSurvey(Request $request)
+    // {
+    //     // Validasi input
+    //     $request->validate([
+    //         'id_user' => 'required|exists:users,id',
+    //         'id_pertanyaan' => 'required|array',
+    //         'jawaban' => 'required|array',
+    //         'jawaban.*' => 'string',
+    //     ]);
+
+    //     // Ambil id_user dari request
+    //     $id_user = $request->input('id_user');
+
+    //     // Debug: Cek nilai id_user
+    //     Log::info('ID User:', ['id_user' => $id_user]);
+
+    //     if (!$id_user) {
+    //         return response()->json(['message' => 'ID pengguna tidak ditemukan.'], 400);
+    //     }
+
+    //     // Lanjutkan menyimpan jawaban
+    // }
+
+
     public function submitSurvey(Request $request)
     {
+        // Cek apakah pengguna terautentikasi
+        if (!auth()->check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Ambil data pengguna yang terautentikasi
+        $user = auth()->user();
+
         // Validasi input
-        $request->validate([
-            'id_responden' => 'required|exists:users,id', // Pastikan id_responden ada di tabel users
+        $validator = Validator::make($request->all(), [
             'id_pertanyaan' => 'required|array',
+            'id_pertanyaan.*' => 'exists:pertanyaan,id',
             'jawaban' => 'required|array',
-            'jawaban.*' => 'string', // Atau sesuai tipe data jawaban yang diharapkan
+            'jawaban.*' => 'string',
         ]);
 
-        // Ambil data dari request
-        $id_responden = $request->input('id_responden');
-        $id_pertanyaans = $request->input('id_pertanyaan');
-        $jawabans = $request->input('jawaban');
-
-        // Memastikan jumlah pertanyaan dan jawaban cocok
-        if (count($id_pertanyaans) !== count($jawabans)) {
-            return response()->json(['message' => 'Jumlah pertanyaan dan jawaban tidak cocok.'], 400);
+        // Jika validasi gagal
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Simpan setiap jawaban ke dalam database
-        foreach ($id_pertanyaans as $index => $id_pertanyaan) {
-            JawabanResponden::create([
-                'id_user' => $id_responden, // Gunakan id_responden sebagai id_user
-                'id_pertanyaan' => $id_pertanyaan,
-                'jawaban' => $jawabans[$index],
+        // Insert atau ambil data responden
+        $responden = Responden::firstOrCreate(
+            ['email' => $user->email],
+            ['name' => $user->name]
+        );
+
+        // Proses setiap pertanyaan dan jawaban
+        foreach ($request->id_pertanyaan as $index => $idPertanyaan) {
+            // Mengonversi jawaban menjadi JSON
+            $jawabanJson = json_encode($request->jawaban[$index]);
+            $jawabanResponden = JawabanResponden::create([
+                'id_user' => $responden->id,
+                'id_pertanyaan' => $idPertanyaan,
+                'jawaban' => $jawabanJson,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
+
+            // Update field id_jawaban_responden di tabel responden
+            $responden->update(['id_jawaban_responden' => $jawabanResponden->id]);
         }
 
-        return response()->json(['message' => 'Data berhasil diterima!'], 201);
+        return response()->json(['message' => 'Survey submitted successfully!', 'redirect' => route('menu-survey')]);
     }
 }

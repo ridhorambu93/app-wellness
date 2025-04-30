@@ -10,17 +10,18 @@ class JawabanResponden extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pertanyaan_id', 'responden_id', 'pilihan_jawaban_id'];
+    protected $fillable = ['id_user', 'id_pertanyaan', 'jawaban'];
     protected $table = 'jawaban_responden';
+
     // Relasi dengan model Pertanyaan
     public function pertanyaan(): BelongsTo
     {
-        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
+        return $this->belongsTo(Pertanyaan::class, 'id_pertanyaan'); // Ubah ke 'id_pertanyaan'
     }
 
     public function responden(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'responden_id');
+        return $this->belongsTo(User::class, 'id_user'); // Ubah ke 'id_user'
     }
 
     // public function pilihanJawaban(): BelongsTo

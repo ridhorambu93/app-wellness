@@ -37,30 +37,48 @@
     </div>
 
     <form id="surveyForm">
-      @foreach($pertanyaans as $index => $p)
-    <div class="card-body bg-white dark:bg-gray-900 rounded-md p-2 m-3">
-        <h4 class="font-weight-bold p-1 mb-2">{{ $index + 1 }}. {{ $p->pertanyaan }}</h4>
-        <hr>
-        <ul>
-            <input type="hidden" name="id_responden" value="{{ auth()->user()->id }}">
-            <input type="hidden" name="id_pertanyaan[]" value="{{ $p->id }}"> <!-- Input tersembunyi untuk id_pertanyaan -->
-            @if($p->type === 'essai')
-                <li class="font-weight-bold ml-3 p-1">
-                    <textarea name="jawaban[]" class="form-control" id="jawaban_{{ $index }}" rows="10" placeholder="Jelaskan jawaban Anda" required></textarea>
-                </li>
-            @else
-                @foreach($p->skalaJawaban as $jawaban)
-                    <li class="font-weight-bold ml-3 p-1">
-                        <input type="radio" name="jawaban[{{ $index }}]" id="jawaban_{{ $index }}_{{ $loop->index }}" value="{{ $jawaban->nilai }}" required>
-                        <label for="jawaban_{{ $index }}_{{ $loop->index }}">{{ $jawaban->nama_skala }}</label>
-                    </li>
-                @endforeach
-            @endif
-        </ul>
-    </div>
-@endforeach
+        <input type="hidden" name="id_user" value="{{ auth()->user()->id }}">
+        @foreach($pertanyaans as $index => $p)
+            <div class="card-body bg-white dark:bg-gray-900 rounded-md p-2 m-3">
+                <h4 class="font-weight-bold p-1 mb-2">{{ $index + 1 }}. {{ $p->pertanyaan }}</h4>
+                <hr>
+                <ul>
+                    <input type="hidden" name="id_pertanyaan[]" value="{{ $p->id }}">
+                    @if($p->type === 'essai')
+                        <li class="font-weight-bold ml-3 p-1">
+                            <textarea name="jawaban[]" class="form-control" id="jawaban_{{ $index }}" rows="10" placeholder="Jelaskan jawaban Anda" required></textarea>
+                        </li>
+                    @else
+                        @foreach($p->skalaJawaban as $jawaban)
+                            <li class="font-weight-bold ml-3 p-1">
+                                <input type="radio" name="jawaban[{{ $index }}]" id="jawaban_{{ $index }}_{{ $loop->index }}" value="{{ $jawaban->nilai }}" required>
+                                <label for="jawaban_{{ $index }}_{{ $loop->index }}">{{ $jawaban->nama_skala }}</label>
+                            </li>
+                        @endforeach
+                    @endif
+                </ul>
+            </div>
+        @endforeach
         <button type="submit" class="m-3 p-3 mb-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Submit</button>
     </form>
+
+    <!-- Modal untuk Menampilkan Pesan Respon -->
+    <div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="responseModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="responseModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </x-app-layout>
 
 <script>
@@ -97,24 +115,47 @@ $(document).ready(function() {
         }
     });
     
-    $('#surveyForm').on('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
-
-        const formData = $(this).serialize(); // Serialize form data
-
+    $('#surveyForm').on('submit', function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize() + '&id_user=' + $('input[name="id_user"]').val();
         $.ajax({
-            url: '/submit-survey', // Ganti dengan URL endpoint yang sesuai
+            url: '/submit-survey',
             type: 'POST',
             data: formData,
             success: function(response) {
-                console.log('Survey submitted successfully:', response);
-                // Redirect or show a success message
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = response.redirect; // Redirect after showing success
+                });
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error submitting survey:', textStatus, errorThrown);
-                // Optionally show an error message
+            error: function(jqXHR) {
+                const errors = jqXHR.responseJSON.errors;
+
+                if (errors) {
+                    let errorMessage = 'Please correct the following errors:\n';
+                    $.each(errors, function(key, value) {
+                        errorMessage += value.join(', ') + '\n'; // Join multiple errors for the same field
+                    });
+                    Swal.fire({
+                        title: 'Error!',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An unexpected error occurred. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
             }
         });
     });
-    });
+});
 </script>

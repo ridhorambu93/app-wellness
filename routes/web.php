@@ -39,11 +39,9 @@ require __DIR__ . '/auth.php';
 /**General user routes **/
 Route::middleware(['auth', 'verified'])->get('/dashboard', [DashboardController::class, 'generalUserDashboard'])->name('dashboard');
 Route::middleware(['auth', 'verified'])->get('/menu-survey', [SurveyController::class, 'generalUserSurvey'])->name('menu-survey');
-Route::middleware(['auth', 'verified'])->get('/fill-survey/{id}', [SurveyController::class, 'generalSurveyFill'])->name('survey.fill');
-Route::middleware(['auth', 'verified'])
-    ->post('/submit-survey', [SurveyController::class, 'submitSurvey'])
-    ->name('submit-survey');
-    
+Route::middleware(['auth'])->get('/fill-survey/{id}', [SurveyController::class, 'generalSurveyFill'])->name('survey.fill');
+Route::post('/submit-survey', [SurveyController::class, 'submitSurvey'])->middleware('auth');
+
 /**Admin routes **/
 Route::middleware('adminAuth')->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('adminDashboardShow');
