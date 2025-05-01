@@ -10,7 +10,7 @@ class Responden extends Model
     use HasFactory;
     protected $table = 'responden'; // Nama tabel jika berbeda
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'id_jawaban_responden'
     ];
