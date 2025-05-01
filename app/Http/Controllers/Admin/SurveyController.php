@@ -250,7 +250,7 @@ class SurveyController extends Controller
         // Insert atau ambil data responden
         $responden = Responden::firstOrCreate(
             ['email' => $user->email],
-            ['name' => $user->name]
+            ['nama' => $user->name]
         );
 
         // Proses setiap pertanyaan dan jawaban
@@ -258,7 +258,7 @@ class SurveyController extends Controller
             // Mengonversi jawaban menjadi JSON
             $jawabanJson = json_encode($request->jawaban[$index]);
             $jawabanResponden = JawabanResponden::create([
-                'id_user' => $responden->id,
+                'id_user' => $user->id,
                 'id_pertanyaan' => $idPertanyaan,
                 'jawaban' => $jawabanJson,
                 'created_at' => now(),
