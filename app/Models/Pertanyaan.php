@@ -32,4 +32,9 @@ class Pertanyaan extends Model
     {
         return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
     }
+
+    public function kategoriJawaban()
+    {
+        return $this->belongsTo(KategoriJawaban::class, 'id_kategori_jawaban', 'id');
+    }
 }

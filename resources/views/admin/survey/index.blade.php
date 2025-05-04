@@ -15,7 +15,6 @@
             font-size: 12px;
         } */
     </style>
-
     <div class="list-tabel-pertanyaan mt-3 p-3">
         <div class="container">
             <div class="row">
@@ -137,6 +136,7 @@
                                                     </div>
                                                     <button class="btn btn-primary">{{ isset($pertanyaan) ? 'Update' : 'Submit' }}</button>
                                                 </form> --}}
+
                                                 <form method="POST" action="{{ route('survey.store') }}">
                                                     @csrf
                                                     <div class="form-group">
@@ -161,6 +161,18 @@
                                                     <div class="form-group">
                                                         <label for="tanggal_berakhir">Tanggal Berakhir <span class="text-danger">*</span></label>
                                                         <input type="date" class="form-control" id="tanggalAkhir" name="tanggal_akhir" /*value="{{ old('tanggal_akhir') }}"*/ required>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <div class="mb-3">
+                                                            <label for="status" class="form-label">Jenis Skala Pertanyaan</label>
+                                                            <select id="Status" name="skala_jawaban" class="form-select">
+                                                                <option>-- Pilih  Jenis Skala --</option>
+                                                            @foreach ($kategori_jawaban as $data_kategori)
+                                                                <option value="{{ $data_kategori->id }}">{{ $data_kategori->nama_kategori }}</option>
+                                                            @endforeach
+                                                            </select>
+                                                        </div>
                                                     </div>
 
                                                     <div class="form-group">
