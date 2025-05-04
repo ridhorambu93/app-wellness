@@ -213,17 +213,76 @@ class SurveyController extends Controller
 
     public function generalSurveyFill($id)
     {
-        $surveys = Survey::find($id);
-        $pertanyaans = Pertanyaan::with('skalaJawaban')->get();
-        foreach ($pertanyaans as $data_pertanyaan) {
-            echo $data_pertanyaan->isi_pertanyaan;
+        // $surveys = Survey::find($id);
+        // $pertanyaans = Pertanyaan::with('skalaJawaban')->get();
+        // foreach ($pertanyaans as $data_pertanyaan) {
+        //     echo $data_pertanyaan->isi_pertanyaan;
 
-            foreach ($data_pertanyaan->skalaJawaban as $jawaban) {
-                echo $jawaban->opsi_jawaban;
+        //     foreach ($data_pertanyaan->skalaJawaban as $jawaban) {
+        //         echo $jawaban->opsi_jawaban;
+        //     }
+        // }
+
+        // return view('general.survey.general-fill', compact('surveys', 'pertanyaans'));
+
+
+        $surveys = Survey::find($id);
+        // Ambil pertanyaan berdasarkan survey_id
+        $pertanyaans = Pertanyaan::with('skalaJawaban')
+            ->where('survey_id', $id)
+            ->get();
+
+        $pertanyaanSkalaLikert = [];
+        $pertanyaanPilihanGanda = [];
+        $pertanyaanEsai = [];
+
+        // Kelompokkan pertanyaan berdasarkan tipe
+        foreach ($pertanyaans as $pertanyaan) {
+            switch ($pertanyaan->type) {
+                case 'skala likert':
+                    $pertanyaanSkalaLikert[] = $pertanyaan;
+                    break;
+                case 'pilihan ganda':
+                    $pertanyaanPilihanGanda[] = $pertanyaan;
+                    break;
+                case 'essai':
+                    $pertanyaanEsai[] = $pertanyaan;
+                    break;
             }
         }
 
-        return view('general.survey.general-fill', compact('surveys', 'pertanyaans'));
+        // Opsi: Tampilkan pertanyaan di konsol (untuk debugging)
+        /*
+    echo "Pertanyaan Skala Likert:\n";
+    foreach ($pertanyaanSkalaLikert as $data_pertanyaan) {
+        echo $data_pertanyaan->pertanyaan . "\n";
+        foreach ($data_pertanyaan->skalaJawaban as $jawaban) {
+            echo "- " . $jawaban->opsi_jawaban . "\n";
+        }
+    }
+
+    echo "\nPertanyaan Pilihan Ganda:\n";
+    foreach ($pertanyaanPilihanGanda as $data_pertanyaan) {
+        echo $data_pertanyaan->pertanyaan . "\n";
+        foreach ($data_pertanyaan->skalaJawaban as $jawaban) {
+            echo "- " . $jawaban->opsi_jawaban . "\n";
+        }
+    }
+
+    echo "\nPertanyaan Esai:\n";
+    foreach ($pertanyaanEsai as $data_pertanyaan) {
+        echo $data_pertanyaan->pertanyaan . "\n";
+    }
+    */
+
+        // Kirim data ke view
+        return view('general.survey.general-fill', compact(
+            'surveys',
+            'pertanyaanSkalaLikert',
+            'pertanyaanPilihanGanda',
+            'pertanyaanEsai',
+            'pertanyaans'
+        ));
     }
 
     // public function submitSurvey(Request $request)
