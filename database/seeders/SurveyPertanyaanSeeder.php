@@ -42,6 +42,61 @@ class SurveyPertanyaanSeeder extends Seeder
                 'survey_id' => 3,
                 'type' => 'essai', // Pertanyaan essai
             ],
+
+            // Kehadiran dan Ketepatan Waktu
+            [
+                'pertanyaan' => 'Saya selalu hadir tepat waktu sesuai dengan jadwal kerja yang ditetapkan. (1-5)',
+                'survey_id' => 2, // Ganti dengan ID survey yang sesuai
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 2, // Sesuaikan dengan kategori jawaban skala likert Anda
+            ],
+            [
+                'pertanyaan' => 'Saya jarang terlambat masuk kerja atau meninggalkan pekerjaan lebih awal. (1-5)',
+                'survey_id' => 2,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 2,
+            ],
+
+            // Penyelesaian Tugas
+            [
+                'pertanyaan' => 'Saya selalu menyelesaikan tugas yang diberikan sesuai dengan tenggat waktu yang ditetapkan. (1-5)',
+                'survey_id' => 2,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 2,
+            ],
+            [
+                'pertanyaan' => 'Saya memastikan semua tugas diselesaikan dengan kualitas yang baik. (1-5)',
+                'survey_id' => 2,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 2,
+            ],
+            [
+                'pertanyaan' => 'Saya proaktif dalam mencari solusi jika menghadapi kendala dalam menyelesaikan tugas. (1-5)',
+                'survey_id' => 2,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 2,
+            ],
+
+            // Kepatuhan Terhadap Aturan dan Prosedur
+            [
+                'pertanyaan' => 'Saya selalu mematuhi semua aturan dan prosedur perusahaan yang berlaku. (1-5)',
+                'survey_id' => 2,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 2,
+            ],
+            [
+                'pertanyaan' => 'Saya memahami dan mengikuti kebijakan perusahaan terkait kedisiplinan. (1-5)',
+                'survey_id' => 2,
+                'type' => 'pilihan ganda',
+                'id_kategori_jawaban' => 2,
+            ],
+
+            // Pertanyaan Terbuka
+            [
+                'pertanyaan' => 'Area apa yang menurut Anda perlu diperbaiki dalam hal kedisiplinan di lingkungan kerja kita?',
+                'survey_id' => 2,
+                'type' => 'essai', // Pertanyaan essai
+            ],
         ];
 
         foreach ($pertanyaans as $pertanyaan) {
