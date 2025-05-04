@@ -22,32 +22,58 @@ class SurveyController extends Controller
     {
         $kategori_jawaban = KategoriJawaban::all();
         $skala_jawaban = SkalaJawaban::with('kategoriJawaban')->get()->groupBy('id_kategori_jawaban');
+        // dd($kategori_jawaban);
         return view('admin.survey.index', compact('kategori_jawaban', 'skala_jawaban'));
     }
 
     public function getDataSurvey(Request $request)
     {
-        // $pertanyaans = Pertanyaan::select(
-        //     'pertanyaan.id AS id_pertanyaan',
-        //     'pertanyaan.pertanyaan AS pertanyaan',
-        //     DB::raw('GROUP_CONCAT(DISTINCT skala_jawaban.nama_skala) AS skala_jawaban'),
-        //     'kategori_jawaban.id AS id_kategori_jawaban',
-        //     'kategori_jawaban.nama_kategori AS kategori_jawaban'
-        // )
-        //     ->join('pilihan_jawaban', 'pertanyaan.id', '=', 'pilihan_jawaban.id_pertanyaan')
-        //     ->join('skala_jawaban', 'pilihan_jawaban.id_skala_jawaban', '=', 'skala_jawaban.id')
-        //     ->join('kategori_jawaban', 'skala_jawaban.id_kategori_jawaban', '=', 'kategori_jawaban.id')
-        //     ->groupBy('pertanyaan.id', 'pertanyaan.pertanyaan', 'kategori_jawaban.id', 'kategori_jawaban.nama_kategori')
-        //     ->get();
-
-        // return DataTables::of($pertanyaans)
-        //     ->addIndexColumn() // Add index column for DataTables
-        //     ->make(true); // Return DataTables response
-
         $surveys = Survey::select('id', 'nama_survey', 'deskripsi_survey', 'tanggal_mulai', 'tanggal_akhir', 'status_survey')->get();
         return DataTables::of($surveys)
             ->addIndexColumn() // Add index column for DataTables
             ->make(true); // Return DataTables response
+
+        // $surveys = Survey::with(['pertanyaan' => function ($query) {
+        //     $query->with(['kategoriJawaban.skalaJawaban']); // Eager load relasi skala jawaban
+        // }])->get();
+
+        // $data = $surveys->map(function ($survey) {
+        //     $pertanyaanData = $survey->pertanyaan->map(function ($pertanyaan) {
+        //         $jawaban = '';
+        //         if ($pertanyaan->tipe_jawaban === 'skala') {
+        //             // Ambil skala jawaban
+        //             $jawaban_dan_nilai = DB::select(DB::raw("
+        //                 SELECT COALESCE(GROUP_CONCAT(CONCAT(sj.nama_skala, ' (', sj.nilai, ')') SEPARATOR ', '), 'Tidak ada skala jawaban') AS jawaban_dan_nilai
+        //                 FROM skala_jawaban sj
+        //                 WHERE sj.id_kategori_jawaban = :kategori_jawaban_id
+        //             "), ['kategori_jawaban_id' => $pertanyaan->id_kategori_jawaban])[0]->jawaban_dan_nilai;
+
+        //             $jawaban = $jawaban_dan_nilai;
+        //         } else {
+        //             $jawaban = 'Bukan pertanyaan skala'; // Atau pesan lain yang sesuai
+        //         }
+
+        //         return [
+        //             'pertanyaan' => $pertanyaan->pertanyaan,
+        //             'tipe_jawaban' => $pertanyaan->tipe_jawaban,
+        //             'jawaban' => $jawaban,
+        //         ];
+        //     });
+
+        //     return [
+        //         'id' => $survey->id,
+        //         'nama_survey' => $survey->nama_survey,
+        //         'deskripsi_survey' => $survey->deskripsi_survey,
+        //         'tanggal_mulai' => $survey->tanggal_mulai,
+        //         'tanggal_akhir' => $survey->tanggal_akhir,
+        //         'status_survey' => $survey->status_survey,
+        //         'pertanyaan' => $pertanyaanData, // Data pertanyaan yang sudah diformat
+        //     ];
+        // });
+
+        // return DataTables::of($data)
+        //     ->addIndexColumn()
+        //     ->make(true);
     }
 
     public function store(Request $request)

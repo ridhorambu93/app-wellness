@@ -9,7 +9,7 @@ class SkalaJawaban extends Model
 {
     use HasFactory;
     protected $table = 'skala_jawaban';
-    
+
     protected $fillable = [
         'id_kategori_jawaban',
         'nama_skala',
@@ -18,6 +18,6 @@ class SkalaJawaban extends Model
 
     public function kategoriJawaban()
     {
-        return $this->belongsTo(KategoriJawaban::class);
+        return $this->belongsTo(KategoriJawaban::class, 'id_kategori_jawaban', 'id');
     }
 }

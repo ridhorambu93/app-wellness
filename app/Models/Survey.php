@@ -15,12 +15,13 @@ class Survey extends Model
         'deskripsi_survey',
         'tanggal_mulai',
         'tanggal_akhir',
-        'status_survey'
+        'status_survey',
+        'id_kategori_jawaban'
     ];
 
     public function kategoriJawaban()
     {
-        return $this->belongsTo(KategoriJawaban::class);
+        return $this->belongsTo(KategoriJawaban::class, 'id_kategori_jawaban'); // foreign key
     }
 
     public function pilihanJawaban()
@@ -28,8 +29,13 @@ class Survey extends Model
         return $this->hasMany(PilihanJawaban::class);
     }
 
+    // public function pertanyaan()
+    // {
+    //     return $this->hasMany(Pertanyaan::class);
+    // }
+
     public function pertanyaan()
     {
-        return $this->hasMany(Pertanyaan::class);
+        return $this->hasMany(Pertanyaan::class, 'survey_id', 'id');
     }
 }
