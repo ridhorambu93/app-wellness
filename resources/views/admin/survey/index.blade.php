@@ -67,14 +67,14 @@
                                 </div>
 
                                 <div class="modal fade" id="addSurveyModal" tabindex="-1" aria-hidden="true" aria-labelledby="addSurveyModalLabel" data-bs-backdrop="static">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="addSurveyModalLabel">
+                                                <h5 class="modal-title text-capitalize fw-bold" id="addSurveyModalLabel">
                                                     @isset($pertanyaan)
-                                                        Edit Survey
+                                                        edit data
                                                     @else
-                                                        Tambah Survey
+                                                        form data survey
                                                     @endisset
                                                 </h5>
                                                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -165,8 +165,8 @@
 
                                                     <div class="form-group">
                                                         <div class="mb-3">
-                                                            <label for="status" class="form-label">Jenis Skala Pertanyaan</label>
-                                                            <select id="Status" name="skala_jawaban" class="form-select">
+                                                            <label for="kategoriJawaban" class="form-label">Jenis Skala Pertanyaan</label>
+                                                            <select id="kategoriJawaban" name="id_kategori_jawaban" class="form-select">
                                                                 <option>-- Pilih  Jenis Skala --</option>
                                                             @foreach ($kategori_jawaban as $data_kategori)
                                                                 <option value="{{ $data_kategori->id }}">{{ $data_kategori->nama_kategori }}</option>
@@ -186,7 +186,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                    <button type="submit" class="btn btn-primary float-right">Simpan</button>
                                                 </form>
                                             </div>
                                         </div>
