@@ -105,10 +105,13 @@ class SurveyController extends Controller
             'tanggal_mulai.date' => 'Tanggal mulai harus berupa tanggal.',
             'tanggal_akhir.required' => 'Tanggal akhir wajib diisi.',
             'tanggal_akhir.date' => 'Tanggal akhir harus berupa tanggal.',
-            'tanggal_akhir.after' => 'Tanggal akhir harus setelah tanggal mulai.'
+            'tanggal_akhir.after' => 'Tanggal akhir harus setelah tanggal mulai.',
+            'id_kategori_jawaban' => 'required|exists:kategori_jawaban,id',
         ]);
 
         $validatedData['status_survey'] = strtolower(trim($request->status_survey)) === 'nonaktif' ? 'nonaktif' : 'aktif';
+        $validatedData['id_kategori_jawaban'] = $request->id_kategori_jawaban;
+        
         try {
             Survey::create($validatedData);
             return redirect()->back()->with('success', 'Data Survey berhasil ditambahkan!');
