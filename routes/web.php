@@ -49,6 +49,8 @@ Route::middleware('adminAuth')->prefix('admin')->group(function () {
 
 // Route::get('survey/{id}', [SurveyController::class, 'show'])->name('survey.show');
 Route::get('master-survey', [SurveyController::class, 'index'])->name('master-survey');
+Route::get('/survey/{id}', [SurveyController::class, 'getSurveyWithQuestions']);
+Route::post('/survey/{surveyId}/pertanyaan', [SurveyController::class, 'addQuestion']);
 Route::get('/survey/create', [SurveyController::class, 'create'])->name('survey.create');
 Route::post('/survey/store', [SurveyController::class, 'store'])->name('survey.store');
 Route::get('/survey/{id}/edit', [SurveyController::class, 'edit'])->name('survey.edit');

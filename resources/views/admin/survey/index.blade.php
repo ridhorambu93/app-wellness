@@ -32,11 +32,6 @@
                                         data-bs-target="#data-pertanyaan" type="button" role="tab"
                                         aria-controls="data-pertanyaan" aria-selected="true">Data Pertanyaan</button>
                                 </li>
-                                <li class="nav-item" role="data-jawaban">
-                                    <button class="nav-link" id="data-jawaban-tab" data-bs-toggle="tab"
-                                        data-bs-target="#data-jawaban" type="button" role="tab"
-                                        aria-controls="data-jawaban" aria-selected="false">Data Jawaban</button>
-                                </li>
                             </ul>
                         </div>
 
@@ -193,6 +188,60 @@
                                     </div>
                                 </div>
 
+                                <!-- Modal for adding questions and displaying survey details -->
+                                <div class="modal fade" id="addPertanyaanSurvey" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Detail dan Tambah Pertanyaan Survey</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Nav tabs for survey details and question types -->
+                                                <ul class="nav nav-tabs" id="surveyTab" role="tablist">
+                                                    <li class="nav-item" role="presentation">
+                                                        <a class="nav-link active" id="survey-detail-tab" data-bs-toggle="tab" href="#survey-detail" role="tab" aria-controls="survey-detail" aria-selected="true">Detail Survey</a>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <a class="nav-link" id="question-tab" data-bs-toggle="tab" href="#question" role="tab" aria-controls="question" aria-selected="false">Tambah Pertanyaan</a>
+                                                    </li>
+                                                </ul>
+
+                                                <!-- Tab content -->
+                                                <div class="tab-content" id="surveyTabContent">
+                                                    <div class="tab-pane fade show active" id="survey-detail" role="tabpanel" aria-labelledby="survey-detail-tab">
+                                                        <div id="surveyDetails">
+                                                            <!-- Survey details will be populated here -->
+                                                        </div>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="question" role="tabpanel" aria-labelledby="question-tab">
+                                                        <input type="hidden" id="surveyId" />
+                                                        <input type="hidden" id="idKategoriJawaban" />
+                                                        <div class="mb-3">
+                                                            <label for="pertanyaanInput" class="form-label">Pertanyaan</label>
+                                                            <input type="text" id="pertanyaanInput" class="form-control" placeholder="Masukkan pertanyaan" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="typeInput" class="form-label">Tipe Pertanyaan</label>
+                                                            <select id="typeInput" class="form-select">
+                                                                <option value="pilihan ganda">Pilihan Ganda</option>
+                                                                <option value="essai">Essai</option>
+                                                            </select>
+                                                        </div>
+                                                        <div id="listJawaban" class="mb-3">
+                                                            <!-- Options for multiple choice answers will be populated here -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                                <button type="button" class="btn btn-primary" id="addQuestionBtn">Tambahkan Pertanyaan</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {{-- tab pertanyaan --}}
                                 <div class="tab-pane fade" id="data-pertanyaan" role="tabpanel" aria-labelledby="data-pertanyaan-tab">
                                     <table id="table-pertanyaan" class="table table-striped table-bordered"
@@ -202,29 +251,13 @@
                                                 <th>No</th>
                                                 <th>List Pertanyaan</th>
                                                 <th>Type Pertanyaan</th>
+                                                <th>Skala Jawaban</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
                                     </table>
                                 </div>
-
-                                {{-- tab jawaban --}}
-                                <div class="tab-pane fade" id="data-jawaban" role="tabpanel"
-                                    aria-labelledby="data-jawaban-tab">
-                                    <table id="table-jawaban" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Jawaban</th>
-                                                <th>Nilai Jawaban</th>
-                                                {{-- <th>Aksi</th> --}}
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                                {{-- end tab jawaban --}}
                             </div>
                         </div>
                     </div>
@@ -236,7 +269,6 @@
 
 <script>
 $(document).ready(function() {
-
    $('#kategoriJawaban').on('change', function() {
     const id_kategori_jawaban = $(this).val();
     const skala_jawaban = @json($skala_jawaban);
@@ -250,6 +282,59 @@ $(document).ready(function() {
             </div>`).join('')}
         </div>`);
     });
+
+
+     // Fetch survey data by ID
+     window.fetchSurveyData = function(id) {
+        $.ajax({
+            url: `/survey/${id}`,
+            method: 'GET',
+            success: function(data) {
+                // Populate survey details
+                $('#surveyDetails').html(`
+                    <p><strong>Nama Survey:</strong> ${data.nama_survey}</p>
+                    <p><strong>Deskripsi:</strong> ${data.deskripsi_survey}</p>
+                    <p><strong>Tanggal Mulai:</strong> ${data.tanggal_mulai}</p>
+                    <p><strong>Tanggal Akhir:</strong> ${data.tanggal_akhir}</p>
+                    <p><strong>Status:</strong> ${data.status_survey}</p>
+                `);
+
+                // Set survey ID
+                $('#surveyId').val(data.id);
+                $('#idKategoriJawaban').val(data.id_kategori_jawaban);
+                $('#addQuestionBtn').show();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    };
+
+// Add question button click event
+$('#addQuestionBtn').click(function() {
+    const surveyId = $('#surveyId').val();
+    const pertanyaan = $('#pertanyaanInput').val();
+    const id_kategori_jawaban = $('#idKategoriJawaban').val();
+    const type = $('#typeInput').val();
+
+    $.ajax({
+        url: `/survey/${surveyId}/pertanyaan`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ pertanyaan, type, id_kategori_jawaban }),
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        success: function(data) {
+            alert(data.success);
+            $('#addPertanyaanSurvey').modal('hide');
+            // Optionally refresh question data here
+        },
+        error: function(xhr, status, error) {
+            console.error('Error adding question:', error);
+        }
+    });
+});
 
     // table survey
     const tableSurvey = $('#table-survey').DataTable({
@@ -271,34 +356,34 @@ $(document).ready(function() {
                 title: 'No',
                 orderable: false,
                 searchable: false,
-                width: '1%',
+                width: '4%',
             },
             {
                 data: 'nama_survey',
                 name: 'nama_survey',
-                width: '20%'
+                width: '15%'
             },
             {
                 data: 'deskripsi_survey',
                 name: 'deskripsi_survey',
                 className: 'dt-head-center dt-body-left',
-                width: '50%',
+                width: '40%',
             },
             {
                 data: 'tanggal_mulai',
                 name: 'tanggal_mulai',
-                width: '8%',
+                width: '10%',
             },
             {
                 data: 'tanggal_akhir',
                 name: 'tanggal_akhir',
-                width: '8%',
+                width: '10%',
             },
             {
                 data: 'status_survey',
                 name: 'status_survey',
                 className: 'dt-body-center',
-                width: '3%',
+                width: '5%',
                 render: function(data, type, row) {
                 var status = {
                         'aktif': '<span class="badge badge-success">Aktif</span>',
@@ -311,19 +396,28 @@ $(document).ready(function() {
                 name: 'action',
                 orderable: false,
                 searchable: false,
-                width: '8%',
                 render: function(data, type, row) {
-                    return `<button class="btn btn-sm rounded-lg btn-info btn-edit text-white bg-info-700 hover:bg-dark-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-info-600 dark:hover:bg-info-700 dark:focus:ring-info-800" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#addSurveyModal">
+                    return `<div class="d-flex justify-content-center">
+                            <button class="btn btn-sm rounded-lg btn-info btn-add-pertanyaan text-white bg-info-700 hover:bg-dark-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-info-600 dark:hover:bg-info-700 dark:focus:ring-info-800" data-id="${row.id}" onclick="fetchSurveyData(${row.id})" data-bs-toggle="modal" data-bs-target="#addPertanyaanSurvey">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"/>
+                                    <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                </svg>
+                            </button>
+
+                            <button class="btn btn-sm rounded-lg btn-warning btn-edit text-white bg-info-700 hover:bg-dark-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-info-600 dark:hover:bg-info-700 dark:focus:ring-info-800" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#addSurveyModal">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                     <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                 </svg>
                             </button>
+                            
                             <button class="btn btn-danger btn-sm rounded-lg btn-delete text-white bg-danger-700 hover:bg-dark-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-danger-600 dark:hover:bg-danger-700 dark:focus:ring-danger-800" data-id="${row.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
                                     <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
                                 </svg>
-                            </button>`;
+                            </button>
+                        </div>`;
                 },
             }
         ],
@@ -420,6 +514,7 @@ $(document).ready(function() {
                 width: '15%'
             },
         ],
+
         // pengaturan bahasa dalam styling datatable
         // language: {
         //     lengthMenu: 'Tampilkan _MENU_ data',
