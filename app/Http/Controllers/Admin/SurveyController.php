@@ -76,6 +76,40 @@ class SurveyController extends Controller
         //     ->make(true);
     }
 
+    public function getSurveyWithQuestions($id)
+    {
+        // Mengambil data survey beserta pertanyaan yang terkait
+        $survey = Survey::with('pertanyaan')->find($id);
+
+        // Cek jika survey tidak ditemukan
+        if (!$survey) {
+            return response()->json(['error' => 'Survey not found'], 404);
+        }
+
+        // Mengembalikan data survey beserta pertanyaan sebagai JSON
+        return response()->json($survey);
+    }
+
+    public function addQuestion(Request $request, $surveyId)
+    {
+        // Validasi input
+        $validatedData = $request->validate([
+            'pertanyaan' => 'required|string|max:255',
+            'type' => 'required|string',
+            'id_kategori_jawaban' => 'required',
+        ]);
+
+        // Menambahkan pertanyaan baru ke survey
+        $pertanyaan = new Pertanyaan();
+        $pertanyaan->survey_id = $surveyId;
+        $pertanyaan->pertanyaan = $validatedData['pertanyaan'];
+        $pertanyaan->type = $validatedData['type'];
+        $pertanyaan->id_kategori_jawaban = $validatedData['id_kategori_jawaban'];
+        $pertanyaan->save();
+
+        return response()->json(['success' => 'Pertanyaan berhasil ditambahkan!']);
+    }
+
     public function store(Request $request)
     {
         // Cudstom Validasi

@@ -11,7 +11,7 @@ class Pertanyaan extends Model
 {
     use HasFactory;
     protected $table = 'pertanyaan';
-    protected $fillable = ['pertanyaan', 'survey_id', 'type'];
+    protected $fillable = ['pertanyaan', 'survey_id', 'type', 'id_kategori_jawaban'];
 
     public function survey(): BelongsTo
     {
