@@ -57,6 +57,8 @@ Route::get('/survey/{id}/edit', [SurveyController::class, 'edit'])->name('survey
 Route::put('/survey/{id}/update', [SurveyController::class, 'update'])->name('survey.update');
 Route::delete('survey/{id}/hapus-pertanyaan', [SurveyController::class, 'destroy'])->name('survey.hapus-pertanyaan');
 
+Route::get('/survey-counts', [SurveyController::class, 'getSurveyCounts']);
+
 
 Route::get('/admin/survey/get-data', [SurveyController::class, 'getData'])->name('admin.survey.getData');
 Route::get('/admin/survey/get-data-jawaban', [SurveyController::class, 'getDataJawaban'])->name('admin.survey.getDataJawaban');
