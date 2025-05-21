@@ -26,6 +26,15 @@ class SurveyController extends Controller
         return view('admin.survey.index', compact('kategori_jawaban', 'skala_jawaban'));
     }
 
+    public function getSurveyCounts()
+    {
+        $surveyCounts = Survey::select('nama_survey', DB::raw('COUNT(*) as total'))
+            ->groupBy('nama_survey')
+            ->get();
+
+        return response()->json($surveyCounts);
+    }
+
     public function getDataSurvey(Request $request)
     {
         $surveys = Survey::select('id', 'nama_survey', 'deskripsi_survey', 'tanggal_mulai', 'tanggal_akhir', 'status_survey')->get();
