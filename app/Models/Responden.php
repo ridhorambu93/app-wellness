@@ -12,7 +12,8 @@ class Responden extends Model
     protected $fillable = [
         'nama',
         'email',
-        'id_jawaban_responden'
+        'id_jawaban_responden',
+        'survey_id',
     ];
 
     public function jawaban()
