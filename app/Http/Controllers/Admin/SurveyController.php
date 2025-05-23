@@ -254,13 +254,15 @@ class SurveyController extends Controller
     public function generalUserSurvey()
     {
         $surveys = Survey::get();
-        return view('general.survey.index', compact('surveys'));
+        $respondens = Responden::pluck('survey_id');
+        // dd($respondens);
+        return view('general.survey.index', compact('surveys', 'respondens'));
     }
 
     public function generalSurveyFill($id)
     {
         $surveys = Survey::with('pertanyaan.skalaJawaban')->find($id);
-        // dd($survey);
+        // dd($surveys);
         return view('general.survey.general-fill', compact('surveys'));
     }
 
@@ -304,19 +306,22 @@ class SurveyController extends Controller
             'id_pertanyaan.*' => 'exists:pertanyaan,id',
             'jawaban' => 'required|array',
             'jawaban.*' => 'string',
+            'survey_id' => 'required|exists:surveys,id',
         ]);
 
         // Jika validasi gagal
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+        // dd($request->all());
         // Insert atau ambil data responden
-        $responden = Responden::firstOrCreate(
-            ['email' => $user->email],
-            ['nama' => $user->name]
+        $responden = Responden::create(
+            [
+                'email' => $user->email,
+                'nama' => $user->name,
+                'survey_id' => $request->survey_id
+            ]
         );
-
         // Proses setiap pertanyaan dan jawaban
         foreach ($request->id_pertanyaan as $index => $idPertanyaan) {
             // Mengonversi jawaban menjadi JSON

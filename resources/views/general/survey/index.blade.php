@@ -8,7 +8,9 @@
     <div class="container">
         <div class="card m-3 p-3">
             <div class="row">
+
             @foreach ($surveys as $data)
+            @php $isFilled = $respondens->contains($data->id); @endphp
                     <div class="col-lg-4 col-md-6 mb-3">
                         <div class="card bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                             @if ($data->status_survey == 'aktif')
@@ -53,11 +55,14 @@
                                     <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <!-- Isi modal -->
                                     <p>{{$data->deskripsi_survey}}</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <a href="{{ route('survey.fill', $data->id) }}" class="btn btn-primary">Isi Survey</a>
+                                    @if ($isFilled)
+                                        <div class="btn btn-success">Anda sudah mengisi survey ini</div>
+                                    @else
+                                        <a href="{{ route('survey.fill', $data->id) }}" class="btn btn-primary">Isi Survey</a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
