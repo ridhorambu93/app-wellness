@@ -251,10 +251,19 @@ class SurveyController extends Controller
         return $datatable;
     }
 
+    // public function generalUserSurvey()
+    // {
+    //     $surveys = Survey::get();
+    //     $respondens = Responden::pluck('survey_id');
+    //     // dd($respondens);
+    //     return view('general.survey.index', compact('surveys', 'respondens'));
+    // }
+
     public function generalUserSurvey()
     {
         $surveys = Survey::get();
-        $respondens = Responden::pluck('survey_id');
+        $userId = auth()->id(); // Ambil ID pengguna yang terautentikasi
+        $respondens = JawabanResponden::where('id_user', $userId)->pluck('id_pertanyaan')->toArray();
         // dd($respondens);
         return view('general.survey.index', compact('surveys', 'respondens'));
     }
@@ -265,29 +274,6 @@ class SurveyController extends Controller
         // dd($surveys);
         return view('general.survey.general-fill', compact('surveys'));
     }
-
-    // public function submitSurvey(Request $request)
-    // {
-    //     // Validasi input
-    //     $request->validate([
-    //         'id_user' => 'required|exists:users,id',
-    //         'id_pertanyaan' => 'required|array',
-    //         'jawaban' => 'required|array',
-    //         'jawaban.*' => 'string',
-    //     ]);
-
-    //     // Ambil id_user dari request
-    //     $id_user = $request->input('id_user');
-
-    //     // Debug: Cek nilai id_user
-    //     Log::info('ID User:', ['id_user' => $id_user]);
-
-    //     if (!$id_user) {
-    //         return response()->json(['message' => 'ID pengguna tidak ditemukan.'], 400);
-    //     }
-
-    //     // Lanjutkan menyimpan jawaban
-    // }
 
 
     public function submitSurvey(Request $request)
@@ -313,31 +299,41 @@ class SurveyController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+
+         // Insert atau ambil data responden
+        $responden = Responden::create([
+            'email' => $user->email,
+            'nama' => $user->name,
+            'survey_id' => $request->survey_id
+        ]);
         // dd($request->all());
-        // Insert atau ambil data responden
-        $responden = Responden::create(
-            [
-                'email' => $user->email,
-                'nama' => $user->name,
-                'survey_id' => $request->survey_id
-            ]
-        );
-        // Proses setiap pertanyaan dan jawaban
-        foreach ($request->id_pertanyaan as $index => $idPertanyaan) {
-            // Mengonversi jawaban menjadi JSON
-            $jawabanJson = json_encode($request->jawaban[$index]);
-            $jawabanResponden = JawabanResponden::create([
-                'id_user' => $user->id,
-                'id_pertanyaan' => $idPertanyaan,
-                'jawaban' => $jawabanJson,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        // Array untuk menyimpan semua id jawaban
+        $idJawabanResponden = [];
 
-            // Update field id_jawaban_responden di tabel responden
-            $responden->update(['id_jawaban_responden' => $jawabanResponden->id]);
+    // Proses setiap pertanyaan dan jawaban
+    foreach ($request->id_pertanyaan as $index => $idPertanyaan) {
+        // Simpan jawaban
+        $jawabanResponden = JawabanResponden::create([
+            'id_user' => $user->id,
+            'id_pertanyaan' => $idPertanyaan,
+            'jawaban' => $request->jawaban[$index], // Simpan jawaban
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Simpan relasi di tabel pivot
+        if (is_array($request->jawaban[$index])) {
+            foreach ($request->jawaban[$index] as $opsiId) {
+                // Simpan relasi dalam tabel pivot
+                $responden->jawabanPivot()->attach($jawabanResponden->id, ['jawaban_responden_id' => $opsiId]);
+            }
+        } else {
+            // Jika jawaban bukan array, simpan sebagai satu entri
+            $responden->jawabanPivot()->attach($jawabanResponden->id, ['jawaban_responden_id' => $jawabanResponden->id]);
         }
-
-        return response()->json(['message' => 'Survey submitted successfully!', 'redirect' => route('menu-survey')]);
     }
+
+    return response()->json(['message' => 'Survey submitted successfully!', 'redirect' => route('menu-survey')]);
+}
+
 }

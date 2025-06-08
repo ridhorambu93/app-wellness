@@ -24,8 +24,8 @@ class JawabanResponden extends Model
         return $this->belongsTo(User::class, 'id_user'); // Ubah ke 'id_user'
     }
 
-    // public function pilihanJawaban(): BelongsTo
-    // {
-    //     return $this->belongsTo(PilihanJawaban::class, 'pilihan_jawaban_id');
-    // }
+    public function respondenPivot()
+    {
+        return $this->belongsToMany(Responden::class, 'responden_jawaban', 'jawaban_responden_id', 'responden_id');
+    }
 }

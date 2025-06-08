@@ -13,23 +13,22 @@
                             {{ $index + 1 }}. {{ $pertanyaan->pertanyaan }}
                         </h4>
                         <hr class="my-2 border-gray-300 dark:border-gray-700">
-
                         <input type="hidden" name="id_pertanyaan[]" value="{{ $pertanyaan->id }}">
-
-                        @if($pertanyaan->type === 'essai')
-                            <textarea name="jawaban[]" class="form-control w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500" rows="4" placeholder="Jelaskan jawaban Anda" required></textarea>
-                        @else
-                            <ul class="list-none space-y-2">
-                                @foreach($pertanyaan->skalaJawaban as $jawaban)
-                                    <li>
-                                        <label class="flex items-center space-x-2">
-                                            <input type="radio" name="jawaban[{{ $index }}]" id="jawaban_{{ $index }}_{{ $loop->index }}" value="{{ $jawaban->nilai }}" class="form-radio h-5 w-5 text-blue-600 dark:bg-gray-700 dark:border-gray-600 focus:ring-blue-500" required>
-                                            <span class="text-gray-700 dark:text-gray-300">{{ $jawaban->nama_skala }}</span>
-                                        </label>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
+                        @if($pertanyaan->type !== 'essai')
+                        <ul class="list-none space-y-2">
+                            @foreach($pertanyaan->skalaJawaban as $jawaban)
+                                <li>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="radio" name="jawaban[{{ $index }}]" id="jawaban_{{ $index }}_{{ $loop->index }}" value="{{ $jawaban->nama_skala }}" class="form-radio h-5 w-5 text-blue-600 dark:bg-gray-700 dark:border-gray-600 focus:ring-blue-500" required>
+                                        <span class="text-gray-700 dark:text-gray-300">{{ $jawaban->nama_skala }}</span>
+                                    </label>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    @if($pertanyaan->type === 'essai')
+                        <textarea name="jawaban[{{ $index }}]" class="form-control w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500" rows="4" placeholder="Jelaskan jawaban Anda" required></textarea>
+                    @endif
                     </div>
                 @endforeach
 

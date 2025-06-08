@@ -16,13 +16,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('jawaban_responden', function (Blueprint $table) {
-            $table->string('jawaban')->change(); // Ganti sesuai tipe sebelumnya
+            $table->string('jawaban')->change(); // Revert to the previous type
         });
     }
 };
