@@ -20,4 +20,9 @@ class Responden extends Model
     {
         return $this->hasMany(JawabanResponden::class, 'id_user', 'id');
     }
+
+    public function jawabanPivot()
+    {
+        return $this->belongsToMany(JawabanResponden::class, 'responden_jawaban', 'responden_id', 'jawaban_responden_id');
+    }
 }

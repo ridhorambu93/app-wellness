@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('responden', function (Blueprint $table) {
-            $table->bigInteger('survey_id')->nullable()->after('id_jawaban_responden');
-            $table->index('survey_id');
+            if (!Schema::hasColumn('responden', 'survey_id')) {
+                $table->bigInteger('survey_id')->nullable();
+            }
         });
     }
 

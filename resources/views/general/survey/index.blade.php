@@ -10,7 +10,7 @@
             <div class="row">
 
             @foreach ($surveys as $data)
-            @php $isFilled = $respondens->contains($data->id); @endphp
+            {{-- @php $isFilled = $respondens->contains($data->id); @endphp --}}
                     <div class="col-lg-4 col-md-6 mb-3">
                         <div class="card bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                             @if ($data->status_survey == 'aktif')
@@ -57,8 +57,15 @@
                                 <div class="modal-body">
                                     <p>{{$data->deskripsi_survey}}</p>
                                 </div>
-                                <div class="modal-footer">
+                                {{-- <div class="modal-footer">
                                     @if ($isFilled)
+                                        <div class="btn btn-success">Anda sudah mengisi survey ini</div>
+                                    @else
+                                        <a href="{{ route('survey.fill', $data->id) }}" class="btn btn-primary">Isi Survey</a>
+                                    @endif
+                                </div> --}}
+                                <div class="modal-footer">
+                                    @if (in_array($data->id, $respondens))
                                         <div class="btn btn-success">Anda sudah mengisi survey ini</div>
                                     @else
                                         <a href="{{ route('survey.fill', $data->id) }}" class="btn btn-primary">Isi Survey</a>

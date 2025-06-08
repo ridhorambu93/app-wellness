@@ -15,11 +15,11 @@ class KategoriJawaban extends Model
 
     public function skalaJawaban()
     {
-        return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
+        return $this->hasMany(SkalaJawaban::class, 'id_kategori_jawaban');
     }
 
-    public function survey()
-    {
-        return $this->hasMany(Survey::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
-    }
+    // public function survey()
+    // {
+    //     return $this->hasMany(Survey::class, 'id_kategori_jawaban', 'id_kategori_jawaban');
+    // }
 }
